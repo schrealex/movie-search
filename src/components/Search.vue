@@ -9,11 +9,15 @@
 
         <div v-if="loading">Loading...</div>
 
-        <div v-if="movieInformation" class="movie-info"
-             v-bind:style="{ 'background-image': 'url(' + getImageUrl('w1280', movieInformation.backdrop_path) + ')', 'background-size' : 'cover' }">
+        <div v-if="movieInformation" class="movie-content">
             <img :src="getImageUrl('w780', movieInformation.poster_path)">
-            <span>{{ movieInformation.original_title }}</span>
-            <span>{{ movieInformation.overview }}</span>
+            <div class="movie-information">
+                <h1>{{ movieInformation.original_title }}</h1>
+                <h4>{{ movieInformation.tagline }}</h4>
+                <span>{{ movieInformation.overview }}</span>
+                <h4>{{ getGenres() }}</h4>
+
+            </div>
         </div>
     </div>
 </template>
@@ -48,28 +52,83 @@
                 this.movies = null;
                 axios
                     .get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
-                    .then(response => (this.movieInformation = response.data))
+                    .then(response => {
+                        this.movieInformation = response.data;
+                        // eslint-disable-next-line no-console
+                        console.log({response: response.data});
+                        document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
+                        document.body.style.backgroundSize = 'cover';
+                    })
             },
             getImageUrl(size, filePath) {
                 return 'http://image.tmdb.org/t/p/' + size + filePath;
+            },
+            getGenres() {
+                return this.movieInformation.genres.map(genre => genre.name).join(', ')
             }
         }
     }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
     .search input {
         border: 0;
+        margin-top: 20px;
         padding: 5px;
         width: 200px;
 
         background-color: #000000;
         color: #ffffff;
+
+        border-bottom: 1px solid gold;
+
+        -webkit-transition: all 0.30s ease-in-out;
+        -moz-transition: all 0.30s ease-in-out;
+        -o-transition: all 0.30s ease-in-out;
+
+        &:focus {
+            box-shadow: 0 2px rgba(255, 215, 0, 1);
+            outline: none;
+        }
     }
 
-    .search input:focus {
-        outline: #ffffff auto 1px;
+    .movie-content {
+        width: 900px;
+        height: 600px;
+        margin: 50px auto;
+
+        display: grid;
+        grid-template-columns: 400px auto;
+        grid-template-rows: 1fr;
+
+        img {
+            grid-column: 1 / span 1;
+            width: 100%;
+        }
+
+        .movie-information {
+            margin: 15px;
+
+            h1 {
+                text-transform: uppercase;
+                margin-bottom: 10px;
+            }
+
+            h4 {
+                font-family: Verdana, serif;
+                color: gold;
+                text-align: left;
+
+                span {
+                    display: inline-block;
+                }
+            }
+
+            span {
+                text-align: left;
+            }
+        }
     }
 
     ul {

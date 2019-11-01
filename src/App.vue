@@ -21,6 +21,7 @@
         padding: 0;
         background-color: #000000;
         color: #ffffff;
+        height: 100%;
     }
 
     #app {
@@ -28,6 +29,9 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-align: center;
-        margin-top: 60px;
+
+        height: 100%;
+
+        background-image: linear-gradient(rgba(0, 0, 0, 0.85) 15%, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 1) 90%);
     }
 </style>
