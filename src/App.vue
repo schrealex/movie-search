@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <img src="/assets/powered-by-rectangle-green.png" />
+        <img src="@/assets/powered-by-rectangle-green.png" />
         <Search/>
     </div>
 </template>
