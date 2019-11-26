@@ -17,6 +17,8 @@
                 <span>{{ movieInformation.overview }}</span>
                 <h4>{{ getGenres() }}</h4>
 
+                <h4>{{ movieInformation.release_date | formatDate }}</h4>
+
             </div>
         </div>
     </div>
@@ -110,6 +112,8 @@
         .movie-information {
             margin: 15px;
 
+            text-align: left;
+
             h1 {
                 text-transform: uppercase;
                 margin-bottom: 10px;
@@ -118,7 +122,6 @@
             h4 {
                 font-family: Verdana, serif;
                 color: gold;
-                text-align: left;
 
                 span {
                     display: inline-block;

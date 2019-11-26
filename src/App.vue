@@ -1,7 +1,7 @@
 <template>
     <div id="app">
-        <img src="@/assets/powered-by-rectangle-green.png" />
         <Search/>
+        <img src="@/assets/powered-by-rectangle-green.png" style="width: 150px;position: absolute;left: 10px;bottom: 10px;">
     </div>
 </template>
 
