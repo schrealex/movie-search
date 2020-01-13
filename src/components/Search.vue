@@ -90,7 +90,7 @@
             margin-top: 20px;
             margin-left: 40px;
             padding: 5px;
-            width: 240px;
+            width: 264px;
 
             align-self: center;
 
@@ -111,10 +111,24 @@
 
         .movies {
             align-self: center;
+            font-weight: bold;
+            margin-top: -16px;
 
-            li:hover {
-                cursor: pointer;
-                color: gold;
+            ul {
+                text-align: left;
+                padding: 5px;
+                margin-left: 40px;
+                background-color: rgba(255, 255, 255, 0.2);
+
+                li {
+                    padding: 5px;
+
+                    &:hover {
+                        cursor: pointer;
+                        color: #000000;
+                        background-color: gold;
+                    }
+                }
             }
         }
     }
