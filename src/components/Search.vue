@@ -12,9 +12,13 @@
         <div v-if="movieInformation" class="movie-content">
             <img :src="getImageUrl('w780', movieInformation.poster_path)">
             <div class="movie-information">
-                <h1>{{ movieInformation.original_title }}</h1>
+                <a :href="'https://www.imdb.com/title/' + movieInformation.imdb_id" target="_blank"><h1>{{ movieInformation.original_title
+                    }}</h1></a>&nbsp;
+                <h3>({{ movieInformation.vote_average }})</h3>
                 <h4>{{ movieInformation.tagline }}</h4>
                 <span>{{ movieInformation.overview }}</span>
+                <h5>{{ getRuntime(movieInformation.runtime) }}</h5>
+
                 <h4>{{ getGenres() }}</h4>
 
                 <h4>{{ movieInformation.release_date | formatDate }}</h4>
@@ -65,6 +69,9 @@
             getImageUrl(size, filePath) {
                 return 'http://image.tmdb.org/t/p/' + size + filePath;
             },
+            getRuntime(runtime) {
+                return Math.round(runtime / 60) + 'h ' + (runtime % 60) + 'min';
+            },
             getGenres() {
                 return this.movieInformation.genres.map(genre => genre.name).join(', ')
             }
@@ -74,24 +81,41 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-    .search input {
-        border: 0;
-        margin-top: 20px;
-        padding: 5px;
-        width: 200px;
+    .search {
+        display: flex;
+        flex-direction: column;
 
-        background-color: #000000;
-        color: #ffffff;
+        input {
+            border: 0;
+            margin-top: 20px;
+            margin-left: 40px;
+            padding: 5px;
+            width: 240px;
 
-        border-bottom: 1px solid gold;
+            align-self: center;
 
-        -webkit-transition: all 0.30s ease-in-out;
-        -moz-transition: all 0.30s ease-in-out;
-        -o-transition: all 0.30s ease-in-out;
+            background-color: transparent;
+            color: #ffffff;
 
-        &:focus {
-            box-shadow: 0 2px rgba(255, 215, 0, 1);
-            outline: none;
+            border-bottom: 1px solid gold;
+
+            -webkit-transition: all 0.30s ease-in-out;
+            -moz-transition: all 0.30s ease-in-out;
+            -o-transition: all 0.30s ease-in-out;
+
+            &:focus {
+                box-shadow: 0 2px rgba(255, 215, 0, 1);
+                outline: none;
+            }
+        }
+
+        .movies {
+            align-self: center;
+
+            li:hover {
+                cursor: pointer;
+                color: gold;
+            }
         }
     }
 
@@ -114,12 +138,13 @@
 
             text-align: left;
 
-            h1 {
+            h1, h3 {
                 text-transform: uppercase;
                 margin-bottom: 10px;
+                display: inline-block;
             }
 
-            h4 {
+            h4, h5 {
                 font-family: Verdana, serif;
                 color: gold;
 
@@ -140,5 +165,14 @@
 
     span {
         display: block;
+    }
+
+    a {
+        text-decoration: none;
+        color: #ffffff;
+
+        &:active, &:visited {
+            color: #ffffff;
+        }
     }
 </style>
