@@ -6,9 +6,9 @@ import dayjs from "dayjs";
 
 Vue.config.productionTip = false;
 
-Vue.filter('formatDate', function (value) {
+Vue.filter('formatDate', function (value, dateFormat) {
     if (value) {
-        return dayjs(String(value)).format('DD MMMM YYYY');
+        return dayjs(String(value)).format(dateFormat);
     }
 });
 

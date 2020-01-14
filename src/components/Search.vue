@@ -2,8 +2,8 @@
     <div class="search">
         <input v-model="searchTerm" placeholder="Find the movie you're looking for" v-on:keyup.enter="searchMovie">
         <div class="movies">
-            <ul>
-                <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }}</li>
+            <ul v-if="movies">
+                <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year | formatDate('YYYY') }})</li>
             </ul>
         </div>
 
@@ -13,15 +13,15 @@
             <img :src="getImageUrl('w780', movieInformation.poster_path)">
             <div class="movie-information">
                 <a :href="'https://www.imdb.com/title/' + movieInformation.imdb_id" target="_blank"><h1>{{ movieInformation.original_title
-                    }}</h1></a>&nbsp;
-                <h3>({{ movieInformation.vote_average }})</h3>
+                    }} ({{ movieInformation.release_date  | formatDate('YYYY') }})</h1></a>
+                <h3>({{ movieInformation.vote_average }} / 10)</h3>
                 <h4>{{ movieInformation.tagline }}</h4>
                 <span>{{ movieInformation.overview }}</span>
                 <h5>{{ getRuntime(movieInformation.runtime) }}</h5>
 
                 <h4>{{ getGenres() }}</h4>
 
-                <h4>{{ movieInformation.release_date | formatDate }}</h4>
+                <h4>{{ movieInformation.release_date | formatDate('DD MMMM YYYY') }}</h4>
 
             </div>
         </div>
@@ -47,9 +47,12 @@
                     .get('https://api.themoviedb.org/3/search/movie?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
                         '&language=en-US&page=1&include_adult=true')
                     .then(response => (this.movies = response.data.results.map(movie => {
+                        // eslint-disable-next-line no-console
+                        console.log({ movie });
                         return {
                             id: movie.id,
-                            title: movie.original_title
+                            title: movie.original_title,
+                            year: movie.release_date
                         }
                     })))
             },
@@ -90,7 +93,7 @@
             margin-top: 20px;
             margin-left: 40px;
             padding: 5px;
-            width: 264px;
+            width: 400px;
 
             align-self: center;
 
@@ -115,10 +118,13 @@
             margin-top: -16px;
 
             ul {
+                position: absolute;
                 text-align: left;
                 padding: 5px;
                 margin-left: 40px;
-                background-color: rgba(255, 255, 255, 0.2);
+                background-color: rgba(0, 0, 0, 0.5);
+                left: calc(50% - 225px);
+                width: 400px;
 
                 li {
                     padding: 5px;
@@ -137,6 +143,7 @@
         width: 900px;
         height: 600px;
         margin: 50px auto;
+        background-color: rgba(0, 0, 0, 0.6);
 
         display: grid;
         grid-template-columns: 400px auto;
@@ -155,7 +162,6 @@
             h1, h3 {
                 text-transform: uppercase;
                 margin-bottom: 10px;
-                display: inline-block;
             }
 
             h4, h5 {
