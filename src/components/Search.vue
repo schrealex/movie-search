@@ -3,7 +3,9 @@
         <input v-model="searchTerm" placeholder="Find the movie you're looking for" v-on:keyup.enter="searchMovie">
         <div class="movies">
             <ul v-if="movies">
-                <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year | formatDate('YYYY') }})</li>
+                <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year |
+                    formatDate('YYYY') }})
+                </li>
             </ul>
         </div>
 
@@ -13,8 +15,11 @@
             <img :src="getImageUrl('w780', movieInformation.poster_path)">
             <div class="movie-information">
                 <a :href="'https://www.imdb.com/title/' + movieInformation.imdb_id" target="_blank"><h1>{{ movieInformation.original_title
-                    }} ({{ movieInformation.release_date  | formatDate('YYYY') }})</h1></a>
-                <h3>({{ movieInformation.vote_average }} / 10)</h3>
+                    }} ({{ movieInformation.release_date | formatDate('YYYY') }})</h1></a>
+                <h3>
+                    <font-awesome-icon :icon="['fad', 'popcorn']"/>
+                    <span class="votes-large">{{ movieInformation.vote_average }}</span><span class="votes-small">/ 10</span>
+                </h3>
                 <h4>{{ movieInformation.tagline }}</h4>
                 <span>{{ movieInformation.overview }}</span>
                 <h5>{{ getRuntime(movieInformation.runtime) }}</h5>
@@ -48,7 +53,7 @@
                         '&language=en-US&page=1&include_adult=true')
                     .then(response => (this.movies = response.data.results.map(movie => {
                         // eslint-disable-next-line no-console
-                        console.log({ movie });
+                        console.log({movie});
                         return {
                             id: movie.id,
                             title: movie.original_title,
@@ -175,6 +180,23 @@
 
             span {
                 text-align: left;
+            }
+
+            .fa-popcorn {
+                font-size: 26px;
+            }
+
+            .votes-large {
+                display: inline-block;
+                font-size: 26px;
+                font-weight: 700;
+                margin-left: 10px;
+            }
+
+            .votes-small {
+                display: inline-block;
+                font-size: 12px;
+                color: #c4c4c4;
             }
         }
     }
