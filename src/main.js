@@ -1,8 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
 
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {faPopcorn} from '@fortawesome/pro-duotone-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+
+library.add(faPopcorn);
+
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 Vue.config.productionTip = false;
 
