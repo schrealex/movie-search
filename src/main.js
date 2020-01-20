@@ -19,6 +19,12 @@ Vue.filter('formatDate', function (value, dateFormat) {
     }
 });
 
+Vue.directive('focus', {
+  inserted: function (el) {
+    el.focus()
+  }
+});
+
 new Vue({
     render: h => h(App),
 }).$mount('#app')
