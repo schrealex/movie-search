@@ -1,6 +1,6 @@
 <template>
     <div class="search">
-        <input v-model="searchTerm" placeholder="Find the movie you're looking for" v-on:keyup.enter="searchMovie">
+        <input v-focus ref="searchInput" v-model="searchTerm" placeholder="Find the movie you're looking for" v-on:keyup.enter="searchMovie">
         <div class="movies">
             <ul v-if="movies">
                 <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year |
@@ -62,6 +62,8 @@
                     })))
             },
             getMovieInformation(movieId) {
+                const that = this;
+
                 this.searchTerm = '';
                 this.movies = null;
                 axios
@@ -72,6 +74,7 @@
                         console.log({response: response.data});
                         document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
                         document.body.style.backgroundSize = 'cover';
+                        that.$refs.searchInput.focus();
                     })
             },
             getImageUrl(size, filePath) {
