@@ -26,7 +26,7 @@
 
                 <h4>{{ getGenres() }}</h4>
 
-                <h4>{{ movieInformation.release_date | formatDate('DD MMMM YYYY') }}</h4>
+                <h4>{{ movieInformation.release_date | formatDate('D MMMM YYYY') }}</h4>
 
             </div>
         </div>
