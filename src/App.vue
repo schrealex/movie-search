@@ -16,7 +16,7 @@
     }
 </script>
 
-<style>
+<style lang="scss">
     html, body {
         margin: 0;
         padding: 0;
@@ -32,6 +32,10 @@
         text-align: center;
 
         height: 100%;
+
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
 
         background-image: linear-gradient(rgba(0, 0, 0, 0.9) 15%, rgba(0, 0, 0, 0.2) 60%, rgba(0, 0, 0, 0.95) 90%);
     }
