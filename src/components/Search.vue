@@ -165,6 +165,27 @@
         width: 900px;
         height: 600px;
         margin: 50px auto;
+
+        @media screen and (max-width: 1200px) {
+            max-width: 800px;
+        }
+
+        @media screen and (max-width: 992px) {
+            max-width: 500px;
+            grid-template-columns: 1fr 300px;
+        }
+
+        /* On screens that are 600px or less, set the background color to olive */
+        @media screen and (max-width: 600px) {
+            max-width: 400px;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1fr;
+
+            img {
+                grid-row: 2 / span 1;
+            }
+        }
+
         background-color: rgba(0, 0, 0, 0.6);
 
         display: grid;
