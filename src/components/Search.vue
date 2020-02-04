@@ -1,6 +1,6 @@
 <template>
     <div class="search">
-        <input v-focus ref="searchInput" v-model="searchTerm" placeholder="Find the movie you're looking for" v-on:keyup.enter="searchMovie">
+        <input v-focus ref="searchInput" v-model="searchTerm" placeholder="Find the movie you're looking for" @blur="clearSearchInput()">
         <div class="movies">
             <ul v-if="movies">
                 <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year |
@@ -35,6 +35,7 @@
 
 <script>
     import axios from 'axios';
+    import _ from 'lodash';
 
     export default {
         name: 'Search',
@@ -43,23 +44,36 @@
                 searchTerm: '',
                 movies: null,
                 movieInformation: null,
-                loading: false
+                loading: false,
             };
         },
+        watch: {
+            searchTerm: _.debounce(function () {
+                this.searchMovie();
+            }, 300)
+        },
         methods: {
+            clearSearchInput() {
+                _.delay(() => {
+                    this.searchTerm = '';
+                    this.movies = null;
+                }, 200);
+            },
             searchMovie() {
-                axios
-                    .get('https://api.themoviedb.org/3/search/movie?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
-                        '&language=en-US&page=1&include_adult=true')
-                    .then(response => (this.movies = response.data.results.map(movie => {
-                        // eslint-disable-next-line no-console
-                        console.log({movie});
-                        return {
-                            id: movie.id,
-                            title: movie.original_title,
-                            year: movie.release_date
-                        }
-                    })))
+                if (this.searchTerm) {
+                    axios
+                        .get('https://api.themoviedb.org/3/search/movie?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
+                            '&language=en-US&page=1&include_adult=true')
+                        .then(response => (this.movies = response.data.results.map(movie => {
+                            // eslint-disable-next-line no-console
+                            console.log({movie});
+                            return {
+                                id: movie.id,
+                                title: movie.original_title,
+                                year: movie.release_date
+                            }
+                        })))
+                }
             },
             getMovieInformation(movieId) {
                 const that = this;
