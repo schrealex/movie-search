@@ -1,6 +1,6 @@
 <template>
     <div class="search">
-        <input v-focus ref="searchInput" v-model="searchTerm" placeholder="Find the movie you're looking for" @blur="clearSearchInput()">
+        <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value" placeholder="Find the movie you're looking for" @blur="clearSearchInput()">
         <div class="movies">
             <ul v-if="movies">
                 <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year |
@@ -115,7 +115,12 @@
             margin-top: 20px;
             margin-left: 40px;
             padding: 5px;
-            width: 400px;
+            width: 600px;
+
+            @media screen and (max-width: 992px) {
+                width: 390px;
+                margin: 0;
+            }  
 
             align-self: center;
 
