@@ -34,7 +34,11 @@
                 <h4>{{ movieInformation.release_date | formatDate('D MMMM YYYY') }}</h4>
 
                 <ul>
-                    <li v-for="castMember in movieCast" v-bind:key="castMember.id">{{ castMember.name }}</li>
+                    <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id">
+                        <span class="movie-cast-member__name">{{ castMember.name }}</span>
+                        <span class="movie-cast-member__divider">-</span>
+                        <span class="movie-cast-member__character">{{ castMember.character }}</span>
+                    </li>
                 </ul>
 
             </div>
@@ -289,6 +293,22 @@
                 li {
                     padding: 4px 0;
                 }
+            }
+
+            .movie-cast-member {
+                display: flex;
+                justify-content: flex-start;
+
+                &__name {
+                }
+
+                &__divider {
+                    margin: 0 20px;
+                }
+
+                &__character {
+                }
+
             }
         }
     }
