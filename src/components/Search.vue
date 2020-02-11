@@ -296,19 +296,15 @@
             }
 
             .movie-cast-member {
-                display: flex;
-                justify-content: flex-start;
-
-                &__name {
-                }
+                width: 300px;
+                display: grid;
+                grid-template-columns: 1fr 30px 1fr;
+                grid-template-rows: 1fr;
+                grid-column-gap: 12px;
 
                 &__divider {
-                    margin: 0 20px;
+                    text-align: center;
                 }
-
-                &__character {
-                }
-
             }
         }
     }
