@@ -2,6 +2,7 @@
     <div id="app">
         <Search/>
         <img class="moviedb-logo" src="@/assets/powered-by-rectangle-green.png" />
+        <img class="moviedb-small-logo" src="@/assets/tmdb.png" />
     </div>
 </template>
 
@@ -39,8 +40,9 @@
 
         @media screen and (max-width: 992px) {
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
+            margin-top: 20px;
         }        
 
         background-image: linear-gradient(rgba(0, 0, 0, 0.9) 15%, rgba(0, 0, 0, 0.2) 60%, rgba(0, 0, 0, 0.95) 90%);
@@ -53,9 +55,22 @@
         bottom: 10px;
 
         @media screen and (max-width: 992px) {
-            top: 10px;
-            left: auto;
-            right: 10px;
+            display: none;
+        }
+    }
+
+    .moviedb-small-logo {
+        width: 50px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+
+        @media screen and (min-width: 991px) {
+            display: none;
+        }
+
+        @media screen and (max-width: 530px) {
+            display: none;
         }
     }
     
