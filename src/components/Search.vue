@@ -19,6 +19,10 @@
                 <h3>
                     <font-awesome-icon :icon="['fad', 'popcorn']"/>
                     <span class="votes-large">{{ movieInformation.vote_average }}</span><span class="votes-small">/ 10</span>
+
+                    <a :href="movieTrailer" target="_blank">
+                    <font-awesome-icon :icon="['fal', 'film']"/>
+                    </a>
                 </h3>
                 <h4>{{ movieInformation.tagline }}</h4>
                 <span>{{ movieInformation.overview }}</span>
@@ -44,6 +48,7 @@
                 searchTerm: '',
                 movies: null,
                 movieInformation: null,
+                movieTrailer: null,
                 loading: false,
             };
         },
@@ -89,7 +94,20 @@
                         document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
                         document.body.style.backgroundSize = 'cover';
                         that.$refs.searchInput.focus();
-                    })
+                    });
+                this.getMovieTrailer(movieId);
+            },
+            getMovieTrailer(movieId) {
+                this.movieTrailer = null;
+                axios
+                    .get('https://api.themoviedb.org/3/movie/' + movieId + '/videos?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .then(response => {
+                        let trailers = response.data.results;
+                        // eslint-disable-next-line no-console
+                        console.log({ trailers });
+                        trailers = trailers.filter(t => t.site === 'YouTube');
+                        this.movieTrailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
+                    });
             },
             getImageUrl(size, filePath) {
                 return 'http://image.tmdb.org/t/p/' + size + filePath;
@@ -230,7 +248,7 @@
                 text-align: left;
             }
 
-            .fa-popcorn {
+            .fa-popcorn, .fa-film {
                 font-size: 26px;
             }
 
@@ -245,6 +263,7 @@
                 display: inline-block;
                 font-size: 12px;
                 color: #c4c4c4;
+                margin-right: 24px;
             }
         }
     }
