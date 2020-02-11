@@ -150,8 +150,13 @@
                 padding: 5px;
                 margin-left: 40px;
                 background-color: rgba(0, 0, 0, 0.5);
-                left: calc(50% - 225px);
-                width: 400px;
+                left: calc(50% - 325px);
+                width: 600px;
+
+                @media screen and (max-width: 992px) {
+                    width: 390px;
+                    left: calc(50% - 240px);
+                }  
 
                 li {
                     padding: 5px;
