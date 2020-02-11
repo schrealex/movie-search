@@ -1,6 +1,7 @@
 <template>
     <div class="search">
-        <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value" placeholder="Find the movie you're looking for" @blur="clearSearchInput()">
+        <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value" placeholder="Find the movie you're looking for"
+               @blur="clearSearchInput()">
         <div class="movies">
             <ul v-if="movies">
                 <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year |
@@ -21,7 +22,7 @@
                     <span class="votes-large">{{ movieInformation.vote_average }}</span><span class="votes-small">/ 10</span>
 
                     <a :href="movieTrailer" target="_blank">
-                    <font-awesome-icon :icon="['fal', 'film']"/>
+                        <font-awesome-icon :icon="['fal', 'film']"/>
                     </a>
                 </h3>
                 <h4>{{ movieInformation.tagline }}</h4>
@@ -31,6 +32,10 @@
                 <h4>{{ getGenres() }}</h4>
 
                 <h4>{{ movieInformation.release_date | formatDate('D MMMM YYYY') }}</h4>
+
+                <ul>
+                    <li v-for="castMember in movieCast" v-bind:key="castMember.id">{{ castMember.name }}</li>
+                </ul>
 
             </div>
         </div>
@@ -49,6 +54,7 @@
                 movies: null,
                 movieInformation: null,
                 movieTrailer: null,
+                movieCast: null,
                 loading: false,
             };
         },
@@ -96,17 +102,28 @@
                         that.$refs.searchInput.focus();
                     });
                 this.getMovieTrailer(movieId);
+                this.getMovieCast(movieId);
             },
             getMovieTrailer(movieId) {
-                this.movieTrailer = null;
                 axios
                     .get('https://api.themoviedb.org/3/movie/' + movieId + '/videos?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
                     .then(response => {
                         let trailers = response.data.results;
                         // eslint-disable-next-line no-console
-                        console.log({ trailers });
+                        console.log({trailers});
                         trailers = trailers.filter(t => t.site === 'YouTube');
                         this.movieTrailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
+                    });
+            },
+            getMovieCast(movieId) {
+                axios
+                    .get('https://api.themoviedb.org/3/movie/' + movieId + '/credits?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9')
+                    .then(response => {
+                        let cast = response.data.cast.slice(0, 5);
+                        // eslint-disable-next-line no-console
+                        console.log({cast});
+                        // trailers = trailers.filter(t => t.site === 'YouTube');
+                        this.movieCast = cast;
                     });
             },
             getImageUrl(size, filePath) {
@@ -138,7 +155,7 @@
             @media screen and (max-width: 992px) {
                 width: 390px;
                 margin: 0;
-            }  
+            }
 
             align-self: center;
 
@@ -174,7 +191,7 @@
                 @media screen and (max-width: 992px) {
                     width: 390px;
                     left: calc(50% - 240px);
-                }  
+                }
 
                 li {
                     padding: 5px;
@@ -264,6 +281,14 @@
                 font-size: 12px;
                 color: #c4c4c4;
                 margin-right: 24px;
+            }
+
+            ul {
+                padding-left: 0;
+
+                li {
+                    padding: 4px 0;
+                }
             }
         }
     }
