@@ -34,13 +34,15 @@
                 <h4>{{ movieInformation.release_date | formatDate('D MMMM YYYY') }}</h4>
 
                 <ul>
-                    <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id">
+                    <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
+                    @click="openPopOver($event, castMember)">
                         <span class="movie-cast-member__name">{{ castMember.name }}</span>
                         <span class="movie-cast-member__divider">-</span>
                         <span class="movie-cast-member__character">{{ castMember.character }}</span>
                     </li>
                 </ul>
 
+                <PopOver v-if="displayPopOver" id="pop-over" :content="getImageUrl('w185', selectedCastMember.profile_path)" :position="positionXY" />
             </div>
         </div>
     </div>
@@ -49,9 +51,13 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
+    import PopOver from './PopOver';
 
     export default {
         name: 'Search',
+        components: {
+            PopOver,
+        },
         data() {
             return {
                 searchTerm: '',
@@ -60,12 +66,21 @@
                 movieTrailer: null,
                 movieCast: null,
                 loading: false,
+                displayPopOver: false,
+                positionXY: null,
+                selectedCastMember: null,
             };
         },
         watch: {
             searchTerm: _.debounce(function () {
                 this.searchMovie();
             }, 300)
+        },
+        mounted() {
+            document.addEventListener('click', this.onClickOutsidePopOver);
+        },
+        beforeDestroy() {
+            document.removeEventListener('click', this.onClickOutsidePopOver);
         },
         methods: {
             clearSearchInput() {
@@ -123,11 +138,7 @@
                 axios
                     .get('https://api.themoviedb.org/3/movie/' + movieId + '/credits?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9')
                     .then(response => {
-                        let cast = response.data.cast.slice(0, 5);
-                        // eslint-disable-next-line no-console
-                        console.log({cast});
-                        // trailers = trailers.filter(t => t.site === 'YouTube');
-                        this.movieCast = cast;
+                        this.movieCast = response.data.cast.slice(0, 5);
                     });
             },
             getImageUrl(size, filePath) {
@@ -138,7 +149,24 @@
             },
             getGenres() {
                 return this.movieInformation.genres.map(genre => genre.name).join(', ')
-            }
+            },
+            openPopOver(event, castMember) {
+                this.selectedCastMember = castMember;
+                const xPosition = event.target.offsetLeft + 25;
+                const yPosition = event.target.offsetTop + 25;
+                this.positionXY = {
+                    x: xPosition,
+                    y: yPosition,
+                };
+                this.displayPopOver = true;
+                event.stopPropagation();
+            },
+            onClickOutsidePopOver(event) {
+                const popOver = document.querySelector('#pop-over');
+                if (this.displayPopOver && (event.target !== popOver && !popOver.contains(event.target))) {
+                    this.displayPopOver = false;
+                }
+            },
         }
     }
 </script>
