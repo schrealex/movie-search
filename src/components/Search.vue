@@ -1,7 +1,15 @@
 <template>
     <div class="search">
-        <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value" placeholder="Find the movie you're looking for"
+        <div class="input-wrap">
+            <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value" placeholder="Find the movie you're looking for"
                @blur="clearSearchInput()">
+            <button class="adult" :class="{ active: adult }" type="button" @click="toggleAdult()">
+                <font-awesome-layers class="fa-lg">
+                    <font-awesome-icon :style="{ visibility: adult ? 'visible' : 'hidden' }" :icon="['fas', 'heat']" transform="flip-v" />
+                    <font-awesome-icon :icon="['fas', 'coffee']" size="lg"/>                    
+                </font-awesome-layers>
+            </button>
+        </div>
         <div class="movies">
             <ul v-if="movies">
                 <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year |
@@ -68,6 +76,7 @@
                 displayPopOver: false,
                 positionXY: null,
                 selectedCastMember: null,
+                adult: false,
             };
         },
         watch: {
@@ -95,7 +104,7 @@
                 if (this.searchTerm) {
                     axios
                         .get('https://api.themoviedb.org/3/search/movie?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
-                            '&language=en-US&page=1&include_adult=true')
+                            '&language=en-US&page=1&include_adult=' + this.adult)
                         .then(response => (this.movies = response.data.results.map(movie => {
                             // eslint-disable-next-line no-console
                             console.log({movie});
@@ -130,8 +139,6 @@
                     .get('https://api.themoviedb.org/3/movie/' + movieId + '/videos?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
                     .then(response => {
                         let trailers = response.data.results;
-                        // eslint-disable-next-line no-console
-                        console.log({trailers});
                         trailers = trailers.filter(t => t.site === 'YouTube');
                         this.movieTrailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
                     });
@@ -151,6 +158,9 @@
             },
             getGenres() {
                 return this.movieInformation.genres.map(genre => genre.name).join(', ')
+            },
+            toggleAdult() {
+                this.adult = !this.adult;
             },
             openPopOver(event, castMember) {
                 this.selectedCastMember = castMember;
@@ -179,45 +189,65 @@
         display: flex;
         flex-direction: column;
 
-        input {
-            border: 0;
-            margin-top: 20px;
-            margin-left: 40px;
-            padding: 5px;
-            width: 600px;
+        .input-wrap {
+            position: relative;
 
-            @media screen and (max-width: 992px) {
-                width: 390px;
-                margin: 0;
+            input {
+                border: 0;
+                margin: 20px 40px 0 40px;
+                padding: 5px;
+                width: 600px;
+
+                @media screen and (max-width: 992px) {
+                    width: 390px;
+                    margin: 0;
+                }
+
+                align-self: center;
+
+                background-color: transparent;
+                color: #ffffff;
+
+                border-bottom: 1px solid gold;
+
+                -webkit-transition: all 0.30s ease-in-out;
+                -moz-transition: all 0.30s ease-in-out;
+                -o-transition: all 0.30s ease-in-out;
+
+                &:focus {
+                    box-shadow: 0 2px rgba(255, 215, 0, 1);
+                    outline: none;
+                }
             }
 
-            align-self: center;
-
-            background-color: transparent;
-            color: #ffffff;
-
-            border-bottom: 1px solid gold;
-
-            -webkit-transition: all 0.30s ease-in-out;
-            -moz-transition: all 0.30s ease-in-out;
-            -o-transition: all 0.30s ease-in-out;
-
-            &:focus {
-                box-shadow: 0 2px rgba(255, 215, 0, 1);
-                outline: none;
+            button.adult {
+                position: absolute;
+                right: 0;
+                width: 30px;
+                background: none;
+                color: rgba(255, 255, 255, 0.5);
+                padding: 0;
+                margin-top: 20px;                
+                border: none;
+                cursor: pointer;
+                
+                &.active {
+                    color: gold;
+                }
             }
         }
 
         .movies {
             align-self: center;
             font-weight: bold;
-            margin-top: -16px;
+            margin-top: -15px;
+            background-color: red;
 
             ul {
                 position: absolute;
                 text-align: left;
                 padding: 5px;
-                margin-left: 40px;
+                margin-left: 25px;
                 background-color: rgba(0, 0, 0, 0.5);
                 left: calc(50% - 325px);
                 width: 600px;
