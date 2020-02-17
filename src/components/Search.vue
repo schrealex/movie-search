@@ -2,19 +2,23 @@
     <div class="search">
         <div class="input-wrap">
             <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value" placeholder="Find the movie you're looking for"
-               @blur="clearSearchInput()">
+                   @blur="clearSearchInput()">
             <button class="adult" :class="{ active: adult }" type="button" @click="toggleAdult()">
                 <font-awesome-layers class="fa-lg">
-                    <font-awesome-icon :style="{ visibility: adult ? 'visible' : 'hidden' }" :icon="['fas', 'heat']" transform="flip-v" />
-                    <font-awesome-icon :icon="['fas', 'coffee']" size="lg"/>                    
+                    <font-awesome-icon :style="{ visibility: adult ? 'visible' : 'hidden' }" :icon="['fas', 'heat']" transform="flip-v"/>
+                    <font-awesome-icon :icon="['fas', 'coffee']" size="lg"/>
                 </font-awesome-layers>
             </button>
         </div>
         <div class="movies">
-            <ul v-if="movies">
-                <li v-for="movie in movies" :key="movie.id" @click="getMovieInformation(movie.id)">{{ movie.title }} ({{ movie.year |
-                    formatDate('YYYY') }})
-                </li>
+            <ul v-if="results">
+                <template v-for="result in results">
+                    <li v-if="result.media_type === 'movie'" :key="result.id" @click="getMovieInformation(result.id)">{{ result.title }} ({{
+                        result.year | formatDate('YYYY') }})
+                    </li>
+                    <li v-if="result.media_type === 'tv'" :key="result.id" @click="getMovieInformation(result.id)">{{ result.title }}</li>
+                    <li v-if="result.media_type === 'person'" :key="result.id">{{ result.name }}</li>
+                </template>
             </ul>
         </div>
 
@@ -43,13 +47,14 @@
 
                 <ul>
                     <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
-                    @click="openPopOver($event, castMember)">
+                        @click="openPopOver($event, castMember)">
                         <span class="movie-cast-member__name">{{ castMember.name }}</span>
                         <span class="movie-cast-member__character">{{ castMember.character }}</span>
                     </li>
                 </ul>
 
-                <PopOver v-if="displayPopOver" id="pop-over" :content="getImageUrl('w185', selectedCastMember.profile_path)" :position="positionXY" />
+                <PopOver v-if="displayPopOver" id="pop-over" :content="getImageUrl('w185', selectedCastMember.profile_path)"
+                         :position="positionXY"/>
             </div>
         </div>
     </div>
@@ -69,6 +74,7 @@
             return {
                 searchTerm: '',
                 movies: null,
+                results: null,
                 movieInformation: null,
                 movieTrailer: null,
                 movieCast: null,
@@ -81,7 +87,7 @@
         },
         watch: {
             searchTerm: _.debounce(function () {
-                this.searchMovie();
+                this.searchMulti();
             }, 300)
         },
         mounted() {
@@ -95,9 +101,25 @@
                 _.delay(() => {
                     this.searchTerm = '';
                     this.movies = null;
+                    this.results = null;
                 }, 200);
             },
             searchMulti() {
+                if (this.searchTerm) {
+                    axios
+                        .get('https://api.themoviedb.org/3/search/multi?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
+                            '&language=en-US&page=1&include_adult=' + this.adult)
+                        .then(response => (this.results = response.data.results.map(result => {
+                            // eslint-disable-next-line no-console
+                            console.log({result});
+                            return result;
+                            // return {
+                            //     id: movie.id,
+                            //     title: movie.original_title,
+                            //     year: movie.release_date
+                            // }
+                        })))
+                }
                 //https://api.themoviedb.org/3/search/multi?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US&query=Gauge&page=1&include_adult=true
             },
             searchMovie() {
@@ -227,10 +249,10 @@
                 background: none;
                 color: rgba(255, 255, 255, 0.5);
                 padding: 0;
-                margin-top: 20px;                
+                margin-top: 20px;
                 border: none;
                 cursor: pointer;
-                
+
                 &.active {
                     color: gold;
                 }
