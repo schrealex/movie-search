@@ -37,7 +37,6 @@
                     <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
                     @click="openPopOver($event, castMember)">
                         <span class="movie-cast-member__name">{{ castMember.name }}</span>
-                        <span class="movie-cast-member__divider">-</span>
                         <span class="movie-cast-member__character">{{ castMember.character }}</span>
                     </li>
                 </ul>
@@ -88,6 +87,9 @@
                     this.searchTerm = '';
                     this.movies = null;
                 }, 200);
+            },
+            searchMulti() {
+                //https://api.themoviedb.org/3/search/multi?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US&query=Gauge&page=1&include_adult=true
             },
             searchMovie() {
                 if (this.searchTerm) {
@@ -324,11 +326,11 @@
             }
 
             .movie-cast-member {
-                width: 300px;
                 display: grid;
-                grid-template-columns: 1fr 30px 1fr;
+                grid-template-columns: 1fr 1fr;
                 grid-template-rows: 1fr;
                 grid-column-gap: 12px;
+                cursor: pointer;
 
                 &__divider {
                     text-align: center;
