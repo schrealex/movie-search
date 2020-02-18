@@ -5,19 +5,22 @@
                    @blur="clearSearchInput()">
             <button class="adult" :class="{ active: adult }" type="button" @click="toggleAdult()">
                 <font-awesome-layers class="fa-lg">
-                    <font-awesome-icon :style="{ visibility: adult ? 'visible' : 'hidden' }" :icon="['fas', 'heat']" transform="flip-v"/>
+                    <font-awesome-icon :style="{ visibility: adult ? 'visible' : 'hidden' }" :icon="['fas', 'heat']" transform="flip-v up-18 right-4"/>
                     <font-awesome-icon :icon="['fas', 'coffee']" size="lg"/>
                 </font-awesome-layers>
             </button>
         </div>
-        <div class="movies">
+        <div class="results">
             <ul v-if="results">
                 <template v-for="result in results">
-                    <li v-if="result.media_type === 'movie'" :key="result.id" @click="getMovieInformation(result.id)">{{ result.title }} ({{
-                        result.year | formatDate('YYYY') }})
+                    <li v-if="result.mediaType === 'movie'" :key="result.id" @click="getMovieInformation(result.id)">
+                        <font-awesome-icon :icon="['fal', 'film']" size="lg"/> {{ result.title }} ({{ result.year | formatDate('YYYY') }})
                     </li>
-                    <li v-if="result.media_type === 'tv'" :key="result.id" @click="getMovieInformation(result.id)">{{ result.title }}</li>
-                    <li v-if="result.media_type === 'person'" :key="result.id">{{ result.name }}</li>
+                    <li v-if="result.mediaType === 'tv'" :key="result.id" @click="getTVInformation(result.id)">
+                        <font-awesome-icon :icon="['far', 'tv-retro']" size="lg"/> {{ result.title }} ({{ result.firstAirDate | formatDate('YYYY') }})</li>
+                    <li v-if="result.mediaType === 'person'" :key="result.id">
+                        <font-awesome-icon :icon="['fas', 'user']" size="lg"/> {{ result.title }}
+                    </li>
                 </template>
             </ul>
         </div>
@@ -28,7 +31,7 @@
             <img :src="getImageUrl('w780', movieInformation.poster_path)">
             <div class="movie-information">
                 <a :href="'https://www.imdb.com/title/' + movieInformation.imdb_id" target="_blank"><h1>{{ movieInformation.original_title
-                    }} ({{ movieInformation.release_date | formatDate('YYYY') }})</h1></a>
+                    }} ({{ movieInformation.year | formatDate('YYYY') }})</h1></a>
                 <h3>
                     <font-awesome-icon :icon="['fad', 'popcorn']"/>
                     <span class="votes-large">{{ movieInformation.vote_average }}</span><span class="votes-small">/ 10</span>
@@ -43,7 +46,7 @@
 
                 <h4>{{ getGenres() }}</h4>
 
-                <h4>{{ movieInformation.release_date | formatDate('D MMMM YYYY') }}</h4>
+                <h4>{{ movieInformation.year | formatDate('D MMMM YYYY') }}</h4>
 
                 <ul>
                     <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
@@ -112,15 +115,15 @@
                         .then(response => (this.results = response.data.results.map(result => {
                             // eslint-disable-next-line no-console
                             console.log({result});
-                            return result;
-                            // return {
-                            //     id: movie.id,
-                            //     title: movie.original_title,
-                            //     year: movie.release_date
-                            // }
+                            return {
+                                id: result.id,
+                                title: this.getResultTitle(result),
+                                year: result.release_date,
+                                firstAirDate: result.first_air_date,
+                                mediaType: result.media_type,
+                            };
                         })))
                 }
-                //https://api.themoviedb.org/3/search/multi?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US&query=Gauge&page=1&include_adult=true
             },
             searchMovie() {
                 if (this.searchTerm) {
@@ -171,6 +174,27 @@
                     .then(response => {
                         this.movieCast = response.data.cast.slice(0, 5);
                     });
+            },
+            getTVInformation(tvId) {
+                const that = this;
+
+                this.searchTerm = '';
+                this.results = null;
+                axios
+                    .get('https://api.themoviedb.org/3/tv/' + tvId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .then(response => {
+                        this.movieInformation = response.data;
+                        // eslint-disable-next-line no-console
+                        console.log({response: response.data});
+                        document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
+                        document.body.style.backgroundSize = 'cover';
+                        that.$refs.searchInput.focus();
+                    });
+                //this.getMovieTrailer(movieId);
+                //this.getMovieCast(movieId);
+            },
+            getResultTitle(result) {
+                return result.media_type === 'movie' ? result.original_title : result.media_type === 'tv' ? result.original_name : result.name;
             },
             getImageUrl(size, filePath) {
                 return 'http://image.tmdb.org/t/p/' + size + filePath;
@@ -244,8 +268,8 @@
 
             button.adult {
                 position: absolute;
-                right: 0;
                 width: 30px;
+                height: 30px;
                 background: none;
                 color: rgba(255, 255, 255, 0.5);
                 padding: 0;
@@ -259,7 +283,7 @@
             }
         }
 
-        .movies {
+        .results {
             align-self: center;
             font-weight: bold;
             margin-top: -15px;
