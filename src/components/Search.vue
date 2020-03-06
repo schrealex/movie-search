@@ -31,7 +31,7 @@
             <img :src="getImageUrl('w780', movieInformation.poster_path)">
             <div class="movie-information">
                 <a :href="'https://www.imdb.com/title/' + movieInformation.imdb_id" target="_blank"><h1>{{ movieInformation.original_title
-                    }} ({{ movieInformation.year | formatDate('YYYY') }})</h1></a>
+                    }} ({{ movieInformation.release_date | formatDate('YYYY') }})</h1></a>
                 <h3>
                     <font-awesome-icon :icon="['fad', 'popcorn']"/>
                     <span class="votes-large">{{ movieInformation.vote_average }}</span><span class="votes-small">/ 10</span>
