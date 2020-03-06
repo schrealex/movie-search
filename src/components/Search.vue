@@ -18,7 +18,7 @@
                     </li>
                     <li v-if="result.mediaType === 'tv'" :key="result.id" @click="getTVInformation(result.id)">
                         <font-awesome-icon :icon="['far', 'tv-retro']" size="lg"/> {{ result.title }} ({{ result.firstAirDate | formatDate('YYYY') }})</li>
-                    <li v-if="result.mediaType === 'person'" :key="result.id">
+                    <li v-if="result.mediaType === 'person'" :key="result.id" @click="getActorInformation(result.id)">
                         <font-awesome-icon :icon="['fas', 'user']" size="lg"/> {{ result.title }}
                     </li>
                 </template>
@@ -60,6 +60,16 @@
                          :position="positionXY"/>
             </div>
         </div>
+
+        <div v-if="actorInformation" class="actor-content">
+            <img :src="getImageUrl('w780', actorInformation.profile_path)">
+            <div class="actor-information">
+                <a :href="'https://www.imdb.com/name/' + actorInformation.imdb_id" target="_blank"><h1>{{ actorInformation.name }}</h1></a>
+                <h5>{{ actorInformation.birthday | formatDate('D MMMM YYYY') }}</h5>
+                <h4>{{ actorInformation.place_of_birth }}</h4>
+                <span>{{ actorInformation.biography }}</span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -79,6 +89,7 @@
                 movies: null,
                 results: null,
                 movieInformation: null,
+                actorInformation: null,
                 movieTrailer: null,
                 movieCast: null,
                 loading: false,
@@ -113,8 +124,6 @@
                         .get('https://api.themoviedb.org/3/search/multi?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
                             '&language=en-US&page=1&include_adult=' + this.adult)
                         .then(response => (this.results = response.data.results.map(result => {
-                            // eslint-disable-next-line no-console
-                            console.log({result});
                             return {
                                 id: result.id,
                                 title: this.getResultTitle(result),
@@ -146,6 +155,8 @@
 
                 this.searchTerm = '';
                 this.movies = null;
+                this.movieInformation = null;
+                this.actorInformation = null;
                 axios
                     .get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
                     .then(response => {
@@ -192,6 +203,22 @@
                     });
                 //this.getMovieTrailer(movieId);
                 //this.getMovieCast(movieId);
+            },
+            getActorInformation(actorId) {
+                const that = this;
+                this.searchTerm = '';
+                this.actorInformation = null;
+                this.movieInformation = null;
+                axios
+                    .get('https://api.themoviedb.org/3/person/' + actorId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .then(response => {
+                        this.actorInformation = response.data;
+                        // eslint-disable-next-line no-console
+                        console.log({response: response.data});
+                        document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.actorInformation.backdrop_path) + ')';
+                        document.body.style.backgroundSize = 'cover';
+                        that.$refs.searchInput.focus();
+                    });
             },
             getResultTitle(result) {
                 return result.media_type === 'movie' ? result.original_title : result.media_type === 'tv' ? result.original_name : result.name;
@@ -316,7 +343,7 @@
         }
     }
 
-    .movie-content {
+    .movie-content, .actor-content {
         width: 900px;
         height: 600px;
         margin: 50px auto;
@@ -352,7 +379,7 @@
             width: 100%;
         }
 
-        .movie-information {
+        .movie-information, .actor-information {
             margin: 15px;
 
             text-align: left;
