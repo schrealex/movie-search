@@ -70,6 +70,13 @@
                 <h5>{{ actorInformation.birthday | formatDate('D MMMM YYYY') }}</h5>
                 <h4>{{ actorInformation.place_of_birth }}</h4>
                 <span>{{ actorInformation.biography }}</span>
+
+                <ul>
+                    <li v-for="credits in movieCredits" :key="credits.id">
+                        <img :src="getImageUrl('w500', credits.poster_path)">
+                        <span class="movie-cast-movie">{{ credits.title }}</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -94,6 +101,7 @@
                 actorInformation: null,
                 movieTrailer: null,
                 movieCast: null,
+                movieCredits: null,
                 loading: false,
                 displayPopOver: false,
                 positionXY: null,
@@ -229,9 +237,15 @@
                         this.actorInformation = response.data;
                         // eslint-disable-next-line no-console
                         console.log({response: response.data});
-                        document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.actorInformation.backdrop_path) + ')';
-                        document.body.style.backgroundSize = 'cover';
                         that.$refs.searchInput.focus();
+                    });
+                this.getActorMovieCredits(actorId);
+            },
+            getActorMovieCredits(actorId) {
+                axios
+                    .get('https://api.themoviedb.org/3/person/' + actorId + '/movie_credits?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .then(response => {
+                        this.movieCredits = response.data.cast.sort((a, b) => b.popularity - a.popularity).slice(0, 8);
                     });
             },
             getResultTitle(result) {
