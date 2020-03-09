@@ -48,9 +48,11 @@
 
                 <h4>{{ movieInformation.year | formatDate('D MMMM YYYY') }}</h4>
 
-                <ul>
+                <ul class="movie-cast-members">
                     <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
-                        @click="openPopOver($event, castMember)">
+                        v-on="!isLargeScreen ? { click: $event => openPopOverForCastMember($event, castMember) } 
+                        : { click: $event => getActorInformation(castMember.id) }">
+                        <img v-if="isLargeScreen" :src="getImageUrl('w185', castMember.profile_path)">
                         <span class="movie-cast-member__name">{{ castMember.name }}</span>
                         <span class="movie-cast-member__character">{{ castMember.character }}</span>
                     </li>
@@ -97,6 +99,7 @@
                 positionXY: null,
                 selectedCastMember: null,
                 adult: false,
+                screenWidth: 0,
             };
         },
         watch: {
@@ -106,9 +109,28 @@
         },
         mounted() {
             document.addEventListener('click', this.onClickOutsidePopOver);
+
+            window.addEventListener('resize', () => {
+                this.screenWidth = window.innerWidth;
+            });
+            this.screenWidth = window.innerWidth;
         },
         beforeDestroy() {
             document.removeEventListener('click', this.onClickOutsidePopOver);
+        },
+        computed: {
+            isLargeScreen() {
+                return this.screenWidth > 1200;
+            },
+            isSmallScreen() {
+                return this.screenWidth > 930 && this.screenWidth <= 1200;
+            },
+            isMobileScreen() {
+                return this.screenWidth > 700 && this.screenWidth <= 930;
+            },
+            isSmallMobileScreen() {
+                return this.screenWidth !== 0 && this.screenWidth <= 700;
+            },
         },
         methods: {
             clearSearchInput() {
@@ -152,11 +174,7 @@
             },
             getMovieInformation(movieId) {
                 const that = this;
-
-                this.searchTerm = '';
-                this.movies = null;
-                this.movieInformation = null;
-                this.actorInformation = null;
+                this.clearFields();
                 axios
                     .get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
                     .then(response => {
@@ -188,9 +206,7 @@
             },
             getTVInformation(tvId) {
                 const that = this;
-
-                this.searchTerm = '';
-                this.results = null;
+                this.clearFields();
                 axios
                     .get('https://api.themoviedb.org/3/tv/' + tvId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
                     .then(response => {
@@ -206,9 +222,7 @@
             },
             getActorInformation(actorId) {
                 const that = this;
-                this.searchTerm = '';
-                this.actorInformation = null;
-                this.movieInformation = null;
+                this.clearFields();
                 axios
                     .get('https://api.themoviedb.org/3/person/' + actorId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
                     .then(response => {
@@ -235,8 +249,10 @@
             toggleAdult() {
                 this.adult = !this.adult;
             },
-            openPopOver(event, castMember) {
+            openPopOverForCastMember(event, castMember) {
                 this.selectedCastMember = castMember;
+                // eslint-disable-next-line no-console
+                console.log({ castMember });
                 const xPosition = event.target.offsetLeft + 25;
                 const yPosition = event.target.offsetTop + 25;
                 this.positionXY = {
@@ -252,11 +268,17 @@
                     this.displayPopOver = false;
                 }
             },
+            clearFields() {
+                this.searchTerm = '';
+                this.$refs.searchInput.value = '';
+                this.movies = null;
+                this.movieInformation = null;
+                this.actorInformation = null;
+            }
         }
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
     .search {
         display: flex;
@@ -267,13 +289,17 @@
 
             input {
                 border: 0;
-                margin: 20px 40px 0 40px;
+                margin: 20px 20px 0 40px;
                 padding: 5px;
                 width: 600px;
 
                 @media screen and (max-width: 992px) {
                     width: 390px;
-                    margin: 0;
+                    margin: 20px 4px 0 0;
+                }
+
+                @media screen and (max-width: 600px) {
+                    width: 320px;
                 }
 
                 align-self: center;
@@ -283,9 +309,7 @@
 
                 border-bottom: 1px solid gold;
 
-                -webkit-transition: all 0.30s ease-in-out;
-                -moz-transition: all 0.30s ease-in-out;
-                -o-transition: all 0.30s ease-in-out;
+                transition: all 0.30s ease-in-out;
 
                 &:focus {
                     box-shadow: 0 2px rgba(255, 215, 0, 1);
@@ -344,12 +368,14 @@
     }
 
     .movie-content, .actor-content {
-        width: 900px;
-        height: 600px;
+        width: 1024px;
+        height: 100%;
         margin: 50px auto;
 
         @media screen and (max-width: 1200px) {
             max-width: 800px;
+            max-height: 630px;
+            grid-template-columns: 420px auto;
         }
 
         @media screen and (max-width: 992px) {
@@ -357,7 +383,6 @@
             grid-template-columns: 1fr 300px;
         }
 
-        /* On screens that are 600px or less, set the background color to olive */
         @media screen and (max-width: 600px) {
             max-width: 400px;
             grid-template-columns: 1fr;
@@ -371,12 +396,17 @@
         background-color: rgba(0, 0, 0, 0.6);
 
         display: grid;
-        grid-template-columns: 400px auto;
+        grid-template-columns: 450px auto;
         grid-template-rows: 1fr;
 
         img {
             grid-column: 1 / span 1;
             width: 100%;
+
+
+            @media screen and (max-width: 600px) {
+                margin-bottom: 40px;
+            }
         }
 
         .movie-information, .actor-information {
@@ -428,17 +458,51 @@
                 }
             }
 
-            .movie-cast-member {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: 1fr;
-                grid-column-gap: 12px;
-                cursor: pointer;
+            .movie-cast-members {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+                width: 100%;
+                margin: 12px 0;
 
-                &__divider {
-                    text-align: center;
+                @media screen and (max-width: 1200px) {
+                    display: initial;
+                }
+
+                .movie-cast-member {
+                    width: 100px;
+                    display: flex;
+                    flex-direction: column;
+
+                    @media screen and (max-width: 1200px) {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-template-rows: 1fr;
+                        grid-column-gap: 12px;
+                        width: 100%;
+                        font-size: initial;
+                    }
+                   
+                    cursor: pointer;
+                    font-size: 12px;
+
+                    &__name {
+                        font-weight: bold;
+                        margin-bottom: 8px;
+
+                         @media screen and (max-width: 1200px) {
+                             margin-bottom: 0;
+                         }
+                    }
+
+                    &__divider {
+                        text-align: center;
+                    }
                 }
             }
+
+            
         }
     }
 
