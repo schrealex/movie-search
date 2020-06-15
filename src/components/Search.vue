@@ -151,8 +151,7 @@
             searchMulti() {
                 if (this.searchTerm) {
                     axios
-                        .get('https://api.themoviedb.org/3/search/multi?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
-                            '&language=en-US&page=1&include_adult=' + this.adult)
+                        .get(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.VUE_APP_API_KEY}&query=${this.searchTerm}&language=en-US&page=1&include_adult=${this.adult}`)
                         .then(response => (this.results = response.data.results.map(result => {
                             return {
                                 id: result.id,
@@ -167,11 +166,8 @@
             searchMovie() {
                 if (this.searchTerm) {
                     axios
-                        .get('https://api.themoviedb.org/3/search/movie?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&query=' + this.searchTerm +
-                            '&language=en-US&page=1&include_adult=' + this.adult)
+                        .get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.VUE_APP_API_KEY}&query=${this.searchTerm}&language=en-US&page=1&include_adult=${this.adult}`)
                         .then(response => (this.movies = response.data.results.map(movie => {
-                            // eslint-disable-next-line no-console
-                            console.log({movie});
                             return {
                                 id: movie.id,
                                 title: movie.original_title,
@@ -184,11 +180,9 @@
                 const that = this;
                 this.clearFields();
                 axios
-                    .get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
                     .then(response => {
                         this.movieInformation = response.data;
-                        // eslint-disable-next-line no-console
-                        console.log({response: response.data});
                         document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
                         document.body.style.backgroundSize = 'cover';
                         that.$refs.searchInput.focus();
@@ -198,7 +192,7 @@
             },
             getMovieTrailer(movieId) {
                 axios
-                    .get('https://api.themoviedb.org/3/movie/' + movieId + '/videos?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .get(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
                     .then(response => {
                         let trailers = response.data.results;
                         trailers = trailers.filter(t => t.site === 'YouTube');
@@ -207,7 +201,7 @@
             },
             getMovieCast(movieId) {
                 axios
-                    .get('https://api.themoviedb.org/3/movie/' + movieId + '/credits?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9')
+                    .get(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.VUE_APP_API_KEY}`)
                     .then(response => {
                         this.movieCast = response.data.cast.slice(0, 5);
                     });
@@ -216,11 +210,9 @@
                 const that = this;
                 this.clearFields();
                 axios
-                    .get('https://api.themoviedb.org/3/tv/' + tvId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .get(`https://api.themoviedb.org/3/tv/${tvId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
                     .then(response => {
                         this.movieInformation = response.data;
-                        // eslint-disable-next-line no-console
-                        console.log({response: response.data});
                         document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
                         document.body.style.backgroundSize = 'cover';
                         that.$refs.searchInput.focus();
@@ -232,18 +224,16 @@
                 const that = this;
                 this.clearFields();
                 axios
-                    .get('https://api.themoviedb.org/3/person/' + actorId + '?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .get(`https://api.themoviedb.org/3/person/${actorId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
                     .then(response => {
                         this.actorInformation = response.data;
-                        // eslint-disable-next-line no-console
-                        console.log({response: response.data});
                         that.$refs.searchInput.focus();
                     });
                 this.getActorMovieCredits(actorId);
             },
             getActorMovieCredits(actorId) {
                 axios
-                    .get('https://api.themoviedb.org/3/person/' + actorId + '/movie_credits?api_key=f16bfeb0210b43f1f12d8d4ccc114ee9&language=en-US')
+                    .get(`https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
                     .then(response => {
                         this.movieCredits = response.data.cast.sort((a, b) => b.popularity - a.popularity).slice(0, 8);
                     });
@@ -265,8 +255,6 @@
             },
             openPopOverForCastMember(event, castMember) {
                 this.selectedCastMember = castMember;
-                // eslint-disable-next-line no-console
-                console.log({ castMember });
                 const xPosition = event.target.offsetLeft + 25;
                 const yPosition = event.target.offsetTop + 25;
                 this.positionXY = {
