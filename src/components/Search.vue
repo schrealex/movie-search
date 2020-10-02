@@ -23,8 +23,14 @@
             <font-awesome-icon :icon="['far', 'tv-retro']" size="lg"/>
             {{ result.title }} ({{ result.firstAirDate | formatDate('YYYY') }})
           </li>
-          <li v-if="result.mediaType === 'person'" :key="result.id" @click="getActorInformation(result.id)">
-            <font-awesome-icon :icon="['fas', 'user']" size="lg"/>
+          <li v-if="result.mediaType === 'person'" :key="result.id" @click="getActorInformation(result.id)"
+              class="result">
+            <font-awesome-icon v-if="!result.adult" :icon="['fas', 'user']" size="lg"/>
+            <div v-else class="adult">
+              <font-awesome-icon :icon="['fas', 'times']" size="lg"/>
+              <font-awesome-icon :icon="['fas', 'times']" size="lg"/>
+              <font-awesome-icon :icon="['fas', 'times']" size="lg"/>
+            </div>
             {{ result.title }}
           </li>
         </template>
@@ -181,6 +187,7 @@ export default {
                 year: result.release_date,
                 firstAirDate: result.first_air_date,
                 mediaType: result.media_type,
+                adult: result.adult,
               };
             })));
       }
@@ -367,6 +374,14 @@ export default {
     font-weight: bold;
     margin-top: -15px;
     background-color: red;
+
+    .result {
+      display: flex;
+
+      .adult {
+        margin-right: 8px;
+      }
+    }
 
     ul {
       position: absolute;
