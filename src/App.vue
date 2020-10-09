@@ -93,4 +93,21 @@ html, body {
   background: gold;
 }
 
+ul {
+  list-style: none;
+}
+
+span {
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: #ffffff;
+
+  &:active, &:visited {
+    color: #ffffff;
+  }
+}
+
 </style>
