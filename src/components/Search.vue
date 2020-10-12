@@ -34,6 +34,7 @@ import _ from 'lodash';
 import SearchResults from '@/components/SearchResults';
 import MovieInformation from '@/components/MovieInformation';
 import ActorInformation from '@/components/ActorInformation';
+import utils from '@/util/utils';
 
 export default {
   name: 'Search',
@@ -58,6 +59,9 @@ export default {
       adult: false,
       screenWidth: 0,
     };
+  },
+  created() {
+    this.getImageUrl = utils.getImageUrl;
   },
   watch: {
     searchTerm: _.debounce(function () {
@@ -163,9 +167,6 @@ export default {
     },
     getResultTitle(result) {
       return result.media_type === 'movie' ? result.original_title : result.media_type === 'tv' ? result.original_name : result.name;
-    },
-    getImageUrl(size, filePath) {
-      return 'http://image.tmdb.org/t/p/' + size + filePath;
     },
     toggleAdult() {
       this.adult = !this.adult;

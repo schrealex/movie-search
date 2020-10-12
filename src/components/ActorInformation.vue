@@ -19,7 +19,7 @@
       <div class="actor-movie-credits">
         <ul class="actor-movie-credits__list">
           <li v-for="credits in movieCredits" :key="credits.id" class="actor-movie-credits__list-item"
-              @click="handleCreditsClick(credits.id)">
+              @click="onCreditsClick(credits.id)">
             <img :src="getImageUrl('w500', credits.poster_path)">
             <span class="movie-cast-movie">{{ credits.title }}</span>
           </li>
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import utils from '@/util/utils';
+
 export default {
   name: 'ActorInformation',
   props: {
@@ -47,6 +49,9 @@ export default {
     return {
       fullBiography: false,
     };
+  },
+  created() {
+    this.getImageUrl = utils.getImageUrl;
   },
   mounted() {
     window.addEventListener('resize', () => {
@@ -69,13 +74,10 @@ export default {
     },
   },
   methods: {
-    handleCreditsClick(id) {
+    onCreditsClick(id) {
       this.fullBiography = false;
       this.$emit('getMovieInformation', id);
     },
-    getImageUrl(size, filePath) {
-      return 'http://image.tmdb.org/t/p/' + size + filePath;
-    }
   }
 };
 </script>
