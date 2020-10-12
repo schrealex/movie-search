@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import utils from '@/util/utils';
+
 export default {
   name: 'MovieInformation',
   props: {
@@ -53,6 +55,9 @@ export default {
       type: Array,
       default: () => [],
     },
+  },
+  created() {
+    this.getImageUrl = utils.getImageUrl;
   },
   mounted() {
     window.addEventListener('resize', () => {
@@ -75,9 +80,6 @@ export default {
     },
   },
   methods: {
-    getImageUrl(size, filePath) {
-      return 'http://image.tmdb.org/t/p/' + size + filePath;
-    },
     getRuntime(runtime) {
       return Math.round(runtime / 60) + 'h ' + (runtime % 60) + 'min';
     },
