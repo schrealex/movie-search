@@ -13,14 +13,14 @@
       </button>
     </div>
 
-    <SearchResults :results="results" @getMovieInformation="getMovieInformation" @getTVInformation="getTVInformation"
+    <SearchResults :results="results" @getMediaInformation="getMediaInformation"
                    @getActorInformation="getActorInformation"/>
 
-    <MovieInformation :movieInformation="movieInformation" :movieTrailer="movieTrailer" :movieCast="movieCast"
+    <MovieInformation :movieInformation="movieInformation" :movieTrailer="movieTrailer" :movieCast="cast"
                       @getActorInformation="getActorInformation"/>
 
     <ActorInformation :actorInformation="actorInformation" :movieCredits="movieCredits"
-                      @getMovieInformation="getMovieInformation"/>
+                      @getMediaInformation="getMediaInformation"/>
 
 
     <PopOver v-if="displayPopOver" id="pop-over" :content="getImageUrl('w185', selectedCastMember.profile_path)"
@@ -51,7 +51,7 @@ export default {
       movieInformation: null,
       actorInformation: null,
       movieTrailer: null,
-      movieCast: null,
+      cast: null,
       movieCredits: null,
       displayPopOver: false,
       positionXY: null,
@@ -103,49 +103,47 @@ export default {
             })));
       }
     },
-    getMovieInformation(movieId) {
+    getMediaInformation(mediaType, mediaId) {
       const that = this;
       this.clearFields();
       axios
-          .get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
+          .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
             this.movieInformation = response.data;
             document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
             document.body.style.backgroundSize = 'cover';
             that.$refs.searchInput.focus();
           });
-      this.getMovieTrailer(movieId);
-      this.getMovieCast(movieId);
+      this.getTrailer(mediaType, mediaId);
+      this.getCast(mediaType, mediaId);
+      this.getExternalIDs(mediaType, mediaId);
     },
-    getMovieTrailer(movieId) {
+    getTrailer(mediaType, mediaId) {
       axios
-          .get(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
+          .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}/videos?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
             let trailers = response.data.results;
             trailers = trailers.filter(t => t.site === 'YouTube');
             this.movieTrailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
           });
     },
-    getMovieCast(movieId) {
+    getCast(mediaType, mediaId) {
       axios
-          .get(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.VUE_APP_API_KEY}`)
+          .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}/credits?api_key=${process.env.VUE_APP_API_KEY}`)
           .then(response => {
-            this.movieCast = response.data.cast.slice(0, 5);
+            this.cast = response.data.cast.slice(0, 5);
           });
     },
-    getTVInformation(tvId) {
+    getExternalIDs(mediaType, mediaId) {
       const that = this;
-      this.clearFields();
       axios
-          .get(`https://api.themoviedb.org/3/tv/${tvId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
+          .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}/external_ids?api_key=${process.env.VUE_APP_API_KEY}`)
           .then(response => {
-            this.movieInformation = response.data;
-            document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
-            document.body.style.backgroundSize = 'cover';
-            that.$refs.searchInput.focus();
+            that.movieInformation = {
+              ...that.movieInformation,
+              externalIds: response.data,
+            };
           });
-      //this.getMovieTrailer(movieId);
-      //this.getMovieCast(movieId);
     },
     getActorInformation(actorId) {
       const that = this;
@@ -191,6 +189,7 @@ export default {
     clearFields() {
       this.searchTerm = '';
       this.$refs.searchInput.value = '';
+      document.body.style.backgroundImage = '';
       this.movies = null;
       this.movieInformation = null;
       this.actorInformation = null;

@@ -76,7 +76,7 @@ export default {
   methods: {
     onCreditsClick(id) {
       this.fullBiography = false;
-      this.$emit('getMovieInformation', id);
+      this.$emit('getMediaInformation', 'movie', id);
     },
   }
 };
