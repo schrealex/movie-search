@@ -16,10 +16,10 @@
     <SearchResults :results="results" @getMediaInformation="getMediaInformation"
                    @getActorInformation="getActorInformation"/>
 
-    <MovieInformation :movieInformation="movieInformation" :movieTrailer="movieTrailer" :movieCast="cast"
+    <MediaInformation :mediaInformation="mediaInformation" :trailer="trailer" :movieCast="cast"
                       @getActorInformation="getActorInformation"/>
 
-    <ActorInformation :actorInformation="actorInformation" :movieCredits="movieCredits"
+    <ActorInformation :actorInformation="actorInformation" :credits="credits"
                       @getMediaInformation="getMediaInformation"/>
 
 
@@ -32,7 +32,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 import SearchResults from '@/components/SearchResults';
-import MovieInformation from '@/components/MovieInformation';
+import MediaInformation from '@/components/MediaInformation';
 import ActorInformation from '@/components/ActorInformation';
 import utils from '@/util/utils';
 
@@ -41,18 +41,17 @@ export default {
   components: {
     SearchResults,
     ActorInformation,
-    MovieInformation,
+    MediaInformation,
   },
   data() {
     return {
       searchTerm: '',
-      movies: null,
       results: null,
-      movieInformation: null,
+      mediaInformation: null,
       actorInformation: null,
-      movieTrailer: null,
+      trailer: null,
       cast: null,
-      movieCredits: null,
+      credits: null,
       displayPopOver: false,
       positionXY: null,
       selectedCastMember: null,
@@ -83,7 +82,6 @@ export default {
     clearSearchInput() {
       _.delay(() => {
         this.searchTerm = '';
-        this.movies = null;
         this.results = null;
       }, 200);
     },
@@ -109,8 +107,8 @@ export default {
       axios
           .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
-            this.movieInformation = response.data;
-            document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
+            this.mediaInformation = response.data;
+            document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.mediaInformation.backdrop_path) + ')';
             document.body.style.backgroundSize = 'cover';
             that.$refs.searchInput.focus();
           });
@@ -124,7 +122,7 @@ export default {
           .then(response => {
             let trailers = response.data.results;
             trailers = trailers.filter(t => t.site === 'YouTube');
-            this.movieTrailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
+            this.trailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
           });
     },
     getCast(mediaType, mediaId) {
@@ -139,8 +137,8 @@ export default {
       axios
           .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}/external_ids?api_key=${process.env.VUE_APP_API_KEY}`)
           .then(response => {
-            that.movieInformation = {
-              ...that.movieInformation,
+            that.mediaInformation = {
+              ...that.mediaInformation,
               externalIds: response.data,
             };
           });
@@ -154,13 +152,16 @@ export default {
             this.actorInformation = response.data;
             that.$refs.searchInput.focus();
           });
-      this.getActorMovieCredits(actorId);
+      this.getActorCredits(actorId);
     },
-    getActorMovieCredits(actorId) {
+    getActorCredits(actorId, mediaType = 'combined',) {
       axios
-          .get(`https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
+          .get(`https://api.themoviedb.org/3/person/${actorId}/${mediaType}_credits?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
-            this.movieCredits = response.data.cast.sort((a, b) => b.popularity - a.popularity).slice(0, 8);
+            this.credits = _.uniqBy(response.data.cast, 'id')
+                .filter(c => c.vote_count >= 60)
+                .sort((a, b) => b.popularity - a.popularity)
+                .slice(0, 8);
           });
     },
     getResultTitle(result) {
@@ -190,8 +191,7 @@ export default {
       this.searchTerm = '';
       this.$refs.searchInput.value = '';
       document.body.style.backgroundImage = '';
-      this.movies = null;
-      this.movieInformation = null;
+      this.mediaInformation = null;
       this.actorInformation = null;
     }
   }
