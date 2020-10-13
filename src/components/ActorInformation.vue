@@ -19,7 +19,8 @@
       <div class="actor-movie-credits">
         <ul class="actor-movie-credits__list">
           <li v-for="credit in credits" :key="credit.id" class="actor-movie-credits__list-item"
-              @click="onCreditsClick(credit.id)">
+              :title="credit.title || credit.name"
+              @click="onCreditsClick(credit)">
             <img :src="getImageUrl('w500', credit.poster_path)">
             <span class="movie-cast-movie">{{ credit.title || credit.name }}</span>
           </li>
@@ -74,9 +75,9 @@ export default {
     },
   },
   methods: {
-    onCreditsClick(id) {
+    onCreditsClick(credit) {
       this.fullBiography = false;
-      this.$emit('getMediaInformation', 'movie', id);
+      this.$emit('getMediaInformation', credit.media_type, credit.id);
     },
   }
 };
