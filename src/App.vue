@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <Search/>
-    <PopularMovies/>
     <img class="moviedb-logo" src="@/assets/powered-by-rectangle-green.png"/>
     <img class="moviedb-small-logo" src="@/assets/tmdb.png"/>
   </div>
@@ -9,12 +8,10 @@
 
 <script>
 import Search from './components/Search.vue';
-import PopularMovies from '@/components/PopularMovies';
 
 export default {
   name: 'app',
   components: {
-    PopularMovies,
     Search
   }
 };
