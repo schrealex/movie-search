@@ -16,6 +16,8 @@
     <SearchResults :results="results" @getMediaInformation="getMediaInformation"
                    @getActorInformation="getActorInformation"/>
 
+    <PopularMovies v-if="!mediaInformation" @getMediaInformation="getMediaInformation"/>
+
     <MediaInformation :mediaInformation="mediaInformation" :trailer="trailer" :movieCast="cast"
                       @getActorInformation="getActorInformation"/>
 
@@ -32,8 +34,9 @@
 import axios from 'axios';
 import _ from 'lodash';
 import SearchResults from '@/components/SearchResults';
-import MediaInformation from '@/components/MediaInformation';
 import ActorInformation from '@/components/ActorInformation';
+import MediaInformation from '@/components/MediaInformation';
+import PopularMovies from '@/components/PopularMovies';
 import utils from '@/util/utils';
 
 export default {
@@ -42,6 +45,7 @@ export default {
     SearchResults,
     ActorInformation,
     MediaInformation,
+    PopularMovies,
   },
   data() {
     return {
