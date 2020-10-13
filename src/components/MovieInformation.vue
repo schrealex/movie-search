@@ -2,9 +2,13 @@
   <div v-if="movieInformation" class="movie-content">
     <img :src="getImageUrl('w780', movieInformation.poster_path)">
     <div class="movie-information">
-      <a :href="'https://www.imdb.com/title/' + movieInformation.imdb_id" target="_blank"><h1>{{
-          movieInformation.original_title
-        }} ({{ movieInformation.release_date | formatDate('YYYY') }})</h1></a>
+      <a v-if="movieInformation.externalIds"
+         :href="'https://www.imdb.com/title/' + movieInformation.externalIds.imdb_id" target="_blank"><h1>{{
+          movieInformation.original_title ?
+              movieInformation.original_title : movieInformation.name
+        }} ({{
+          movieInformation.release_date ? movieInformation.release_date : movieInformation.first_air_date | formatDate('YYYY')
+        }})</h1></a>
       <h3>
         <font-awesome-icon :icon="['fad', 'popcorn']"/>
         <span class="votes-large">{{ movieInformation.vote_average }}</span><span class="votes-small">/ 10</span>
@@ -15,7 +19,7 @@
       </h3>
       <h4>{{ movieInformation.tagline }}</h4>
       <span>{{ movieInformation.overview }}</span>
-      <h5>{{ getRuntime(movieInformation.runtime) }}</h5>
+      <h5 v-if="movieInformation.runtime">{{ getRuntime(movieInformation.runtime) }}</h5>
 
       <h4>{{ getGenres() }}</h4>
 
@@ -84,7 +88,7 @@ export default {
       return Math.round(runtime / 60) + 'h ' + (runtime % 60) + 'min';
     },
     getGenres() {
-      return this.movieInformation.genres.map(genre => genre.name).join(', ');
+      return this.movieInformation ? this.movieInformation.genres.map(genre => genre.name).join(', ') : [];
     },
   }
 };

@@ -2,11 +2,12 @@
   <div class="results">
     <ul v-if="results">
       <template v-for="result in results">
-        <li v-if="result.mediaType === 'movie'" :key="result.id" @click="$emit('getMovieInformation', result.id)">
+        <li v-if="result.mediaType === 'movie'" :key="result.id"
+            @click="$emit('getMediaInformation', 'movie', result.id)">
           <font-awesome-icon :icon="['fal', 'film']" size="lg"/>
           {{ result.title }} ({{ result.year | formatDate('YYYY') }})
         </li>
-        <li v-if="result.mediaType === 'tv'" :key="result.id" @click="$emit('getTVInformation', result.id)">
+        <li v-if="result.mediaType === 'tv'" :key="result.id" @click="$emit('getMediaInformation', 'tv', result.id)">
           <font-awesome-icon :icon="['far', 'tv-retro']" size="lg"/>
           {{ result.title }} ({{ result.firstAirDate | formatDate('YYYY') }})
         </li>
