@@ -7,7 +7,11 @@
            @click="$emit('getMediaInformation', 'movie', movie.id)">
         <img :src="getImageUrl('w154', movie.poster_path)">
         <span class="movie-title">{{ movie.title }}</span>
-        <span class="movie-rating">{{ movie.vote_average }}</span>
+        <span class="movie-rating">
+          <font-awesome-icon :icon="['far', 'circle']" size="3x"
+          />
+          <span class="movie-rating--text">{{ movie.vote_average | toSingleDecimal }}</span>
+        </span>
       </div>
     </div>
   </div>
@@ -51,13 +55,16 @@ export default {
       return this.screenWidth !== 0 && this.screenWidth <= 700;
     },
   },
+  filters: {
+    toSingleDecimal(value) {
+      return value.toFixed(1);
+    }
+  },
   methods: {
     getPopularMovies() {
       axios
           .get(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.VUE_APP_API_KEY}&query=${this.searchTerm}&language=en-US&page=1&sort_by=popularity.desc&include_adult=${this.adult}`)
           .then(response => {
-            // eslint-disable-next-line no-console
-            console.log(response.data.results);
             this.popularMovies = response.data.results;
           });
     },
@@ -73,13 +80,48 @@ export default {
   flex-wrap: wrap;
   margin-top: 40px;
 
+  img {
+    height: 231px;
+    width: 154px;
+  }
+
   .movie {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
     max-width: 150px;
     height: 350px;
     padding: 0 14px;
+
+    .movie-title {
+      width: 100%;
+      margin-top: 30px;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .movie-rating {
+      position: absolute;
+      left: 12px;
+      bottom: 144px;
+      color: gold;
+
+      .fa-circle {
+        border-radius: 50%;
+        background-color: #444444;
+        position: absolute;
+      }
+
+      &--text {
+        display: inline;
+        font-weight: 900;
+        position: absolute;
+        color: #eeeeee;
+        top: 13px;
+        left: 12px;
+      }
+    }
 
     &:hover {
       cursor: pointer;

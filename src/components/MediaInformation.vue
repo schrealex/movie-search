@@ -121,6 +121,12 @@ export default {
     }
   }
 
+  @media screen and (max-width: 420px) {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+  }
+
   background-color: rgba(0, 0, 0, 0.6);
 
   display: grid;
@@ -198,6 +204,11 @@ export default {
         display: initial;
       }
 
+      @media screen and (max-width: 420px) {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
       .movie-cast-member {
         width: 100px;
         margin: 0 5px;
@@ -219,6 +230,10 @@ export default {
           grid-column-gap: 12px;
           width: 100%;
           font-size: initial;
+        }
+
+        @media screen and (max-width: 420px) {
+          width: 150px;
         }
 
         cursor: pointer;

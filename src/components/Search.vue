@@ -1,6 +1,9 @@
 <template>
   <div class="search">
     <div class="input-wrap">
+      <button class="home" type="button" @click="togglePopularMovies()">
+        <font-awesome-icon :icon="['fal', 'film']" size="2x"/>
+      </button>
       <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value"
              placeholder="Find the movie you're looking for"
              @blur="clearSearchInput()">
@@ -16,7 +19,7 @@
     <SearchResults :results="results" @getMediaInformation="getMediaInformation"
                    @getActorInformation="getActorInformation"/>
 
-    <PopularMovies v-if="!mediaInformation" @getMediaInformation="getMediaInformation"/>
+    <PopularMovies v-if="showPopularMovies" @getMediaInformation="getMediaInformation"/>
 
     <MediaInformation :mediaInformation="mediaInformation" :trailer="trailer" :movieCast="cast"
                       @getActorInformation="getActorInformation"/>
@@ -56,6 +59,7 @@ export default {
       trailer: null,
       cast: null,
       credits: null,
+      showPopularMovies: true,
       displayPopOver: false,
       positionXY: null,
       selectedCastMember: null,
@@ -89,6 +93,10 @@ export default {
         this.results = null;
       }, 200);
     },
+    togglePopularMovies() {
+      this.clearFields();
+      this.showPopularMovies = true;
+    },
     searchMulti() {
       if (this.searchTerm) {
         axios
@@ -108,6 +116,7 @@ export default {
     getMediaInformation(mediaType, mediaId) {
       const that = this;
       this.clearFields();
+      this.showPopularMovies = false;
       axios
           .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
@@ -150,6 +159,7 @@ export default {
     getActorInformation(actorId) {
       const that = this;
       this.clearFields();
+      this.showPopularMovies = false;
       axios
           .get(`https://api.themoviedb.org/3/person/${actorId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
@@ -225,6 +235,10 @@ export default {
         width: 320px;
       }
 
+      @media screen and (max-width: 420px) {
+        width: 260px;
+      }
+
       align-self: center;
 
       background-color: transparent;
@@ -240,23 +254,31 @@ export default {
       }
     }
 
-    button.adult {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      background: none;
-      color: rgba(255, 255, 255, 0.5);
-      padding: 0;
-      margin-top: 20px;
-      border: none;
-      cursor: pointer;
+    button {
+      &.home, &.adult {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background: none;
+        color: rgba(255, 255, 255, 0.5);
+        padding: 0;
+        margin-top: 20px;
+        border: none;
+        cursor: pointer;
 
-      &:focus {
-        outline: none;
+        &:focus {
+          outline: none;
+        }
+
+        &.active {
+          color: gold;
+        }
       }
 
-      &.active {
-        color: gold;
+      &.home {
+        @media screen and (max-width: 420px) {
+          left: 30px;
+        }
       }
     }
   }
