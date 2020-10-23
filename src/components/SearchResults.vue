@@ -44,6 +44,7 @@ export default {
   font-weight: bold;
   margin-top: -15px;
   background-color: red;
+  z-index: 10;
 
   .result {
     display: flex;
@@ -65,6 +66,11 @@ export default {
     @media screen and (max-width: 992px) {
       width: 390px;
       left: calc(50% - 240px);
+    }
+
+    @media screen and (max-width: 420px) {
+      left: calc(50% - 196px);
+      width: 346px;
     }
 
     li {

@@ -18,10 +18,11 @@
 
       <div class="actor-movie-credits">
         <ul class="actor-movie-credits__list">
-          <li v-for="credits in movieCredits" :key="credits.id" class="actor-movie-credits__list-item"
-              @click="onCreditsClick(credits.id)">
-            <img :src="getImageUrl('w500', credits.poster_path)">
-            <span class="movie-cast-movie">{{ credits.title }}</span>
+          <li v-for="credit in credits" :key="credit.id" class="actor-movie-credits__list-item"
+              :title="credit.title || credit.name"
+              @click="onCreditsClick(credit)">
+            <img :src="getImageUrl('w500', credit.poster_path)">
+            <span class="movie-cast-movie">{{ credit.title || credit.name }}</span>
           </li>
         </ul>
       </div>
@@ -40,7 +41,7 @@ export default {
       default: () => {
       },
     },
-    movieCredits: {
+    credits: {
       type: Array,
       default: () => [],
     },
@@ -74,9 +75,9 @@ export default {
     },
   },
   methods: {
-    onCreditsClick(id) {
+    onCreditsClick(credit) {
       this.fullBiography = false;
-      this.$emit('getMediaInformation', 'movie', id);
+      this.$emit('getMediaInformation', credit.media_type, credit.id);
     },
   }
 };

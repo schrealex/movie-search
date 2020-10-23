@@ -1,29 +1,29 @@
 <template>
-  <div v-if="movieInformation" class="movie-content">
-    <img :src="getImageUrl('w780', movieInformation.poster_path)">
+  <div v-if="mediaInformation" class="movie-content">
+    <img :src="getImageUrl('w780', mediaInformation.poster_path)">
     <div class="movie-information">
-      <a v-if="movieInformation.externalIds"
-         :href="'https://www.imdb.com/title/' + movieInformation.externalIds.imdb_id" target="_blank"><h1>{{
-          movieInformation.original_title ?
-              movieInformation.original_title : movieInformation.name
+      <a v-if="mediaInformation.externalIds"
+         :href="'https://www.imdb.com/title/' + mediaInformation.externalIds.imdb_id" target="_blank"><h1>{{
+          mediaInformation.original_title ?
+              mediaInformation.original_title : mediaInformation.name
         }} ({{
-          movieInformation.release_date ? movieInformation.release_date : movieInformation.first_air_date | formatDate('YYYY')
+          mediaInformation.release_date ? mediaInformation.release_date : mediaInformation.first_air_date | formatDate('YYYY')
         }})</h1></a>
       <h3>
         <font-awesome-icon :icon="['fad', 'popcorn']"/>
-        <span class="votes-large">{{ movieInformation.vote_average }}</span><span class="votes-small">/ 10</span>
+        <span class="votes-large">{{ mediaInformation.vote_average }}</span><span class="votes-small">/ 10</span>
 
         <a :href="movieTrailer" target="_blank">
           <font-awesome-icon :icon="['fal', 'film']"/>
         </a>
       </h3>
-      <h4>{{ movieInformation.tagline }}</h4>
-      <span>{{ movieInformation.overview }}</span>
-      <h5 v-if="movieInformation.runtime">{{ getRuntime(movieInformation.runtime) }}</h5>
+      <h4>{{ mediaInformation.tagline }}</h4>
+      <span>{{ mediaInformation.overview }}</span>
+      <h5 v-if="mediaInformation.runtime">{{ getRuntime(mediaInformation.runtime) }}</h5>
 
       <h4>{{ getGenres() }}</h4>
 
-      <h4>{{ movieInformation.year | formatDate('D MMMM YYYY') }}</h4>
+      <h4>{{ mediaInformation.year | formatDate('D MMMM YYYY') }}</h4>
 
       <ul class="movie-cast-members">
         <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
@@ -44,9 +44,9 @@
 import utils from '@/util/utils';
 
 export default {
-  name: 'MovieInformation',
+  name: 'MediaInformation',
   props: {
-    movieInformation: {
+    mediaInformation: {
       type: Object,
       default: () => {
       },
@@ -88,7 +88,7 @@ export default {
       return Math.round(runtime / 60) + 'h ' + (runtime % 60) + 'min';
     },
     getGenres() {
-      return this.movieInformation ? this.movieInformation.genres.map(genre => genre.name).join(', ') : [];
+      return this.mediaInformation.genres ? this.mediaInformation.genres.map(genre => genre.name).join(', ') : [];
     },
   }
 };
@@ -119,6 +119,12 @@ export default {
     img {
       grid-row: 2 / span 1;
     }
+  }
+
+  @media screen and (max-width: 420px) {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
   }
 
   background-color: rgba(0, 0, 0, 0.6);
@@ -189,7 +195,7 @@ export default {
     .movie-cast-members {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: flex-start;
       width: 100%;
       margin: 12px 0;
@@ -198,10 +204,24 @@ export default {
         display: initial;
       }
 
+      @media screen and (max-width: 420px) {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
       .movie-cast-member {
         width: 100px;
+        margin: 0 5px;
         display: flex;
         flex-direction: column;
+
+        &:first-child {
+          margin-left: 0;
+        }
+
+        &:last-child {
+          margin-right: 0;
+        }
 
         @media screen and (max-width: 1200px) {
           display: grid;
@@ -210,6 +230,10 @@ export default {
           grid-column-gap: 12px;
           width: 100%;
           font-size: initial;
+        }
+
+        @media screen and (max-width: 420px) {
+          width: 150px;
         }
 
         cursor: pointer;

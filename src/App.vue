@@ -32,11 +32,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 
-  height: 100%;
-
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  height: 100vh;
+  width: 100vw;
 
   @media screen and (max-width: 992px) {
     flex-direction: column;

@@ -1,6 +1,9 @@
 <template>
   <div class="search">
     <div class="input-wrap">
+      <button class="home" type="button" @click="togglePopularMovies()">
+        <font-awesome-icon :icon="['fal', 'film']" size="2x"/>
+      </button>
       <input v-focus ref="searchInput" v-on:input="searchTerm = $event.target.value"
              placeholder="Find the movie you're looking for"
              @blur="clearSearchInput()">
@@ -16,10 +19,12 @@
     <SearchResults :results="results" @getMediaInformation="getMediaInformation"
                    @getActorInformation="getActorInformation"/>
 
-    <MovieInformation :movieInformation="movieInformation" :movieTrailer="movieTrailer" :movieCast="cast"
+    <PopularMovies v-if="showPopularMovies" @getMediaInformation="getMediaInformation"/>
+
+    <MediaInformation :mediaInformation="mediaInformation" :trailer="trailer" :movieCast="cast"
                       @getActorInformation="getActorInformation"/>
 
-    <ActorInformation :actorInformation="actorInformation" :movieCredits="movieCredits"
+    <ActorInformation :actorInformation="actorInformation" :credits="credits"
                       @getMediaInformation="getMediaInformation"/>
 
 
@@ -32,8 +37,9 @@
 import axios from 'axios';
 import _ from 'lodash';
 import SearchResults from '@/components/SearchResults';
-import MovieInformation from '@/components/MovieInformation';
 import ActorInformation from '@/components/ActorInformation';
+import MediaInformation from '@/components/MediaInformation';
+import PopularMovies from '@/components/PopularMovies';
 import utils from '@/util/utils';
 
 export default {
@@ -41,18 +47,19 @@ export default {
   components: {
     SearchResults,
     ActorInformation,
-    MovieInformation,
+    MediaInformation,
+    PopularMovies,
   },
   data() {
     return {
       searchTerm: '',
-      movies: null,
       results: null,
-      movieInformation: null,
+      mediaInformation: null,
       actorInformation: null,
-      movieTrailer: null,
+      trailer: null,
       cast: null,
-      movieCredits: null,
+      credits: null,
+      showPopularMovies: true,
       displayPopOver: false,
       positionXY: null,
       selectedCastMember: null,
@@ -83,9 +90,12 @@ export default {
     clearSearchInput() {
       _.delay(() => {
         this.searchTerm = '';
-        this.movies = null;
         this.results = null;
       }, 200);
+    },
+    togglePopularMovies() {
+      this.clearFields();
+      this.showPopularMovies = true;
     },
     searchMulti() {
       if (this.searchTerm) {
@@ -106,11 +116,12 @@ export default {
     getMediaInformation(mediaType, mediaId) {
       const that = this;
       this.clearFields();
+      this.showPopularMovies = false;
       axios
           .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
-            this.movieInformation = response.data;
-            document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.movieInformation.backdrop_path) + ')';
+            this.mediaInformation = response.data;
+            document.body.style.backgroundImage = 'url(' + this.getImageUrl('w1280', this.mediaInformation.backdrop_path) + ')';
             document.body.style.backgroundSize = 'cover';
             that.$refs.searchInput.focus();
           });
@@ -124,7 +135,7 @@ export default {
           .then(response => {
             let trailers = response.data.results;
             trailers = trailers.filter(t => t.site === 'YouTube');
-            this.movieTrailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
+            this.trailer = `https://www.youtube.com/watch?v=${trailers[0].key}`;
           });
     },
     getCast(mediaType, mediaId) {
@@ -139,8 +150,8 @@ export default {
       axios
           .get(`https://api.themoviedb.org/3/${mediaType}/${mediaId}/external_ids?api_key=${process.env.VUE_APP_API_KEY}`)
           .then(response => {
-            that.movieInformation = {
-              ...that.movieInformation,
+            that.mediaInformation = {
+              ...that.mediaInformation,
               externalIds: response.data,
             };
           });
@@ -148,19 +159,23 @@ export default {
     getActorInformation(actorId) {
       const that = this;
       this.clearFields();
+      this.showPopularMovies = false;
       axios
           .get(`https://api.themoviedb.org/3/person/${actorId}?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
             this.actorInformation = response.data;
             that.$refs.searchInput.focus();
           });
-      this.getActorMovieCredits(actorId);
+      this.getActorCredits(actorId);
     },
-    getActorMovieCredits(actorId) {
+    getActorCredits(actorId, mediaType = 'combined',) {
       axios
-          .get(`https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
+          .get(`https://api.themoviedb.org/3/person/${actorId}/${mediaType}_credits?api_key=${process.env.VUE_APP_API_KEY}&language=en-US`)
           .then(response => {
-            this.movieCredits = response.data.cast.sort((a, b) => b.popularity - a.popularity).slice(0, 8);
+            this.credits = _.uniqBy(response.data.cast, 'id')
+                .filter(c => c.vote_count >= 60)
+                .sort((a, b) => b.popularity - a.popularity)
+                .slice(0, 8);
           });
     },
     getResultTitle(result) {
@@ -190,8 +205,7 @@ export default {
       this.searchTerm = '';
       this.$refs.searchInput.value = '';
       document.body.style.backgroundImage = '';
-      this.movies = null;
-      this.movieInformation = null;
+      this.mediaInformation = null;
       this.actorInformation = null;
     }
   }
@@ -221,6 +235,10 @@ export default {
         width: 320px;
       }
 
+      @media screen and (max-width: 420px) {
+        width: 260px;
+      }
+
       align-self: center;
 
       background-color: transparent;
@@ -236,23 +254,31 @@ export default {
       }
     }
 
-    button.adult {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      background: none;
-      color: rgba(255, 255, 255, 0.5);
-      padding: 0;
-      margin-top: 20px;
-      border: none;
-      cursor: pointer;
+    button {
+      &.home, &.adult {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background: none;
+        color: rgba(255, 255, 255, 0.5);
+        padding: 0;
+        margin-top: 20px;
+        border: none;
+        cursor: pointer;
 
-      &:focus {
-        outline: none;
+        &:focus {
+          outline: none;
+        }
+
+        &.active {
+          color: gold;
+        }
       }
 
-      &.active {
-        color: gold;
+      &.home {
+        @media screen and (max-width: 420px) {
+          left: 30px;
+        }
       }
     }
   }
