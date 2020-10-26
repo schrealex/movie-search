@@ -216,13 +216,16 @@ export default {
 .search {
   display: flex;
   flex-direction: column;
+  width: 100vw;
 
   .input-wrap {
     position: relative;
+    display: flex;
+    justify-content: center;
 
     input {
       border: 0;
-      margin: 20px 20px 0 40px;
+      margin: 20px 5px 0 5px;
       padding: 5px;
       width: 600px;
 
@@ -237,6 +240,7 @@ export default {
 
       @media screen and (max-width: 420px) {
         width: 260px;
+        margin: 20px 5px;
       }
 
       align-self: center;
@@ -256,13 +260,14 @@ export default {
 
     button {
       &.home, &.adult {
-        position: absolute;
+        //position: absolute;
         width: 30px;
         height: 30px;
         background: none;
         color: rgba(255, 255, 255, 0.5);
         padding: 0;
-        margin-top: 20px;
+        //margin-top: 20px;
+        margin: 20px 5px 0 5px;
         border: none;
         cursor: pointer;
 
@@ -277,7 +282,7 @@ export default {
 
       &.home {
         @media screen and (max-width: 420px) {
-          left: 30px;
+          //left: 30px;
         }
       }
     }

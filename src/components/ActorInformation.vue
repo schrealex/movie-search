@@ -1,6 +1,6 @@
 <template>
   <div v-if="actorInformation" class="actor-content">
-    <img :src="getImageUrl('w780', actorInformation.profile_path)">
+    <img class="actor-content__image" :src="getImageUrl('w780', actorInformation.profile_path)">
     <div class="actor-information">
       <a :href="'https://www.imdb.com/name/' + actorInformation.imdb_id" target="_blank"><h1>{{
           actorInformation.name
@@ -110,6 +110,11 @@ export default {
     }
   }
 
+  @media screen and (max-width: 420px) {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
   background-color: rgba(0, 0, 0, 0.6);
 
   display: grid;
@@ -120,9 +125,12 @@ export default {
     grid-column: 1 / span 1;
     width: 100%;
 
-
     @media screen and (max-width: 600px) {
       margin-bottom: 40px;
+    }
+
+    @media screen and (max-width: 420px) {
+      margin-bottom: 0;
     }
   }
 
@@ -156,6 +164,10 @@ export default {
       margin-right: -1em;
       padding-right: 1em;
 
+      @media screen and (max-width: 420px) {
+        margin-right: 0;
+      }
+
       &.full {
         max-height: initial;
       }
@@ -186,6 +198,10 @@ export default {
   .actor-movie-credits {
     width: 540px;
     overflow-x: scroll;
+
+    @media screen and (max-width: 420px) {
+      width: 376px;
+    }
 
     &__list {
       display: flex;
