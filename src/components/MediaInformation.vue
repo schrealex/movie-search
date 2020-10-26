@@ -25,17 +25,19 @@
 
       <h4>{{ mediaInformation.year | formatDate('D MMMM YYYY') }}</h4>
 
-      <ul class="movie-cast-members">
-        <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
-            @click="$emit('getActorInformation', castMember.id)">
-          <img class="movie-cast-member__image"
-               :src="getImageUrl( isLargeScreen ? 'w185' : 'w92', castMember.profile_path)">
-          <div class="movie-cast-member__name-character">
-            <span class="movie-cast-member__name">{{ castMember.name }}</span>
-            <span class="movie-cast-member__character">{{ castMember.character }}</span>
-          </div>
-        </li>
-      </ul>
+      <div class="movie-cast-members">
+        <ul class="movie-cast-members__list">
+          <li class="movie-cast-member" v-for="castMember in movieCast" v-bind:key="castMember.id"
+              @click="$emit('getActorInformation', castMember.id)">
+            <img class="movie-cast-member__image"
+                 :src="getImageUrl( isLargeScreen ? 'w185' : 'w92', castMember.profile_path)">
+            <div class="movie-cast-member__name-character">
+              <span class="movie-cast-member__name">{{ castMember.name }}</span>
+              <span class="movie-cast-member__character">{{ castMember.character }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -197,8 +199,19 @@ export default {
       flex-direction: row;
       justify-content: flex-start;
       align-items: flex-start;
-      width: 100%;
       margin: 12px 0;
+
+      width: 540px;
+      overflow-x: scroll;
+
+      &__list {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-direction: row;
+        width: 1200px;
+        margin-bottom: 0;
+      }
 
       @media screen and (max-width: 1200px) {
         display: initial;
@@ -207,6 +220,7 @@ export default {
       @media screen and (max-width: 420px) {
         display: flex;
         flex-wrap: wrap;
+        width: 400px;
       }
 
       .movie-cast-member {
@@ -230,10 +244,6 @@ export default {
           grid-column-gap: 12px;
           width: 100%;
           font-size: initial;
-        }
-
-        @media screen and (max-width: 420px) {
-          width: 150px;
         }
 
         cursor: pointer;
@@ -260,6 +270,16 @@ export default {
           @media screen and (max-width: 1200px) {
             width: 100px;
             grid-column: 1;
+          }
+          @media screen and (max-width: 420px) {
+            grid-row: 1;
+            margin-bottom: 8px;
+          }
+        }
+
+        &__name-character {
+          @media screen and (max-width: 420px) {
+            grid-row: 2;
           }
         }
 

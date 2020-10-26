@@ -43,8 +43,11 @@ export default {
   align-self: center;
   font-weight: bold;
   margin-top: -15px;
-  background-color: red;
   z-index: 10;
+
+  @media screen and (max-width: 420px) {
+    margin-top: -30px;
+  }
 
   .result {
     display: flex;
