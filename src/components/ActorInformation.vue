@@ -197,7 +197,7 @@ export default {
 
   .actor-movie-credits {
     width: 540px;
-    overflow-x: scroll;
+    overflow-x: auto;
 
     @media screen and (max-width: 420px) {
       width: 376px;
