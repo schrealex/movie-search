@@ -1,13 +1,14 @@
 <template>
   <div v-if="mediaInformation" class="movie-content">
-    <img :src="getImageUrl('w780', mediaInformation.poster_path)">
+    <img class="poster" :src="getImageUrl('w780', mediaInformation.poster_path)">
     <div class="movie-information">
       <a v-if="mediaInformation.externalIds"
          :href="'https://www.imdb.com/title/' + mediaInformation.externalIds.imdb_id" target="_blank"><h1>{{
           mediaInformation.original_title ?
               mediaInformation.original_title : mediaInformation.name
         }} ({{
-          mediaInformation.release_date ? mediaInformation.release_date : mediaInformation.first_air_date | formatDate('YYYY')
+          mediaInformation.release_date ? mediaInformation.release_date : mediaInformation.first_air_date |
+              formatDate('YYYY')
         }})</h1></a>
       <h3>
         <font-awesome-icon :icon="['fad', 'popcorn']"/>
@@ -135,14 +136,16 @@ export default {
   grid-template-columns: 450px auto;
   grid-template-rows: 1fr;
 
+  .poster {
+
+    @media screen and (max-width: 420px) {
+      max-width: 100vw;
+    }
+  }
+
   img {
     grid-column: 1 / span 1;
     width: 100%;
-
-
-    @media screen and (max-width: 600px) {
-      margin-bottom: 40px;
-    }
   }
 
   .movie-information {
@@ -202,7 +205,7 @@ export default {
       margin: 12px 0;
 
       width: 540px;
-      overflow-x: scroll;
+      overflow-x: auto;
 
       &__list {
         display: flex;
@@ -220,7 +223,7 @@ export default {
       @media screen and (max-width: 420px) {
         display: flex;
         flex-wrap: wrap;
-        width: 400px;
+        width: 92vw;
       }
 
       .movie-cast-member {
