@@ -131,7 +131,7 @@ export default {
 
     @media screen and (max-width: 420px) {
       margin-bottom: 16px;
-      width: 100vw;
+      width: 412px;
     }
   }
 
