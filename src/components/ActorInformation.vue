@@ -127,6 +127,7 @@ export default {
 
     @media screen and (max-width: 600px) {
       margin-bottom: 40px;
+      width: 412px;
     }
 
     @media screen and (max-width: 420px) {
