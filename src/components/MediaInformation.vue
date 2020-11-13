@@ -137,9 +137,8 @@ export default {
   grid-template-rows: 1fr;
 
   .poster {
-
     @media screen and (max-width: 420px) {
-      max-width: 100vw;
+      max-width: 412px;
     }
   }
 
