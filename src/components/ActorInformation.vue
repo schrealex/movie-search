@@ -123,16 +123,16 @@ export default {
 
   img {
     grid-column: 1 / span 1;
-    width: 100%;
+    //width: 100%;
 
     @media screen and (max-width: 600px) {
       margin-bottom: 40px;
-      width: 412px;
+      width: 200px;
     }
 
     @media screen and (max-width: 420px) {
       margin-bottom: 16px;
-      width: 412px;
+      width: 200px;
     }
   }
 
