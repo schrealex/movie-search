@@ -138,7 +138,7 @@ export default {
 
   .poster {
     @media screen and (max-width: 420px) {
-      max-width: 412px;
+      width: 412px;
     }
   }
 
