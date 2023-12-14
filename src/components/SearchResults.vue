@@ -27,7 +27,7 @@
   </div>
 </template>
 
-<script>
+<script lang="js">
 import dayjs from 'dayjs';
 export default {
   name: 'SearchResults',

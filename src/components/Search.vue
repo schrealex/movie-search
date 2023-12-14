@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<script>
+<script lang="js">
 import axios from 'axios';
 import _ from 'lodash';
 import SearchResults from '@/components/SearchResults.vue';
