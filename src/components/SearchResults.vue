@@ -1,20 +1,21 @@
 <template>
-  <div class="results">
-    <ul v-if="results">
+  <div v-if="results" class="absolute top-20 flex w-full max-w-prose h-screen items-start justify-center font-bold -mt-2 z-10">
+    <ul class="w-full max-w-prose ml-4 mr-6 bg-black/50 text-white decoration-transparent">
       <template v-for="result in results">
-        <li v-if="result.mediaType === 'movie'" :key="result.id"
-            @click="$emit('getMediaInformation', 'movie', result.id)">
-          <font-awesome-icon :icon="['fal', 'film']" size="lg"/>
-          {{ result.title }} ({{ result.year | formatDate('YYYY') }})
+        <li v-if="result.mediaType === 'movie'" :key="result.id" @click="$emit('getMediaInformation', 'movie', result.id)"
+        class="p-1 hover:cursor-pointer hover:bg-gold">
+          <font-awesome-icon :icon="['fas', 'film']" size="lg" class="mr-1"/>
+          {{ result.title }} ({{ getYear(result.year, 'YYYY') }})
         </li>
-        <li v-if="result.mediaType === 'tv'" :key="result.id" @click="$emit('getMediaInformation', 'tv', result.id)">
-          <font-awesome-icon :icon="['far', 'tv-retro']" size="lg"/>
-          {{ result.title }} ({{ result.firstAirDate | formatDate('YYYY') }})
+        <li v-if="result.mediaType === 'tv'" :key="result.id" @click="$emit('getMediaInformation', 'tv', result.id)"
+            class="p-1 hover:cursor-pointer hover:bg-gold">
+          <font-awesome-icon :icon="['fas', 'tv']" size="lg" class="mr-1"/>
+          {{ result.title }} ({{ getYear(result.firstAirDate, 'YYYY') }})
         </li>
         <li v-if="result.mediaType === 'person'" :key="result.id" @click="$emit('getActorInformation', result.id)"
-            class="result">
-          <font-awesome-icon v-if="!result.adult" :icon="['fas', 'user']" size="lg"/>
-          <div v-else class="adult">
+            class="p-1 flex hover:cursor-pointer hover:bg-gold">
+          <font-awesome-icon v-if="!result.adult" :icon="['fas', 'user']" size="lg" class="mr-2" />
+          <div v-else class="mr-2">
             <font-awesome-icon :icon="['fas', 'times']" size="lg"/>
             <font-awesome-icon :icon="['fas', 'times']" size="lg"/>
             <font-awesome-icon :icon="['fas', 'times']" size="lg"/>
@@ -27,6 +28,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs';
 export default {
   name: 'SearchResults',
   props: {
@@ -35,56 +37,10 @@ export default {
       default: () => [],
     },
   },
+  methods: {
+    getYear(date, dateFormat) {
+      return dayjs(String(date)).format(dateFormat);
+    },
+  }
 };
 </script>
-
-<style scoped lang="scss">
-.results {
-  align-self: center;
-  font-weight: bold;
-  margin-top: -15px;
-  z-index: 10;
-
-  @media screen and (max-width: 420px) {
-    margin-top: -30px;
-  }
-
-  .result {
-    display: flex;
-
-    .adult {
-      margin-right: 8px;
-    }
-  }
-
-  ul {
-    position: absolute;
-    text-align: left;
-    padding: 5px;
-    margin-left: 25px;
-    background-color: rgba(0, 0, 0, 0.5);
-    left: calc(50% - 325px);
-    width: 600px;
-
-    @media screen and (max-width: 992px) {
-      width: 390px;
-      left: calc(50% - 240px);
-    }
-
-    @media screen and (max-width: 420px) {
-      left: calc(50% - 196px);
-      width: 346px;
-    }
-
-    li {
-      padding: 5px;
-
-      &:hover {
-        cursor: pointer;
-        color: #000000;
-        background-color: gold;
-      }
-    }
-  }
-}
-</style>
