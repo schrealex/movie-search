@@ -23,10 +23,10 @@
   </div>
 </template>
 
-<script>
+<script lang="js">
 import utils from '@/util/utils';
 import dayjs from "dayjs";
-import _ from "lodash";
+import _ from 'lodash';
 
 export default {
   name: 'ActorInformation',
